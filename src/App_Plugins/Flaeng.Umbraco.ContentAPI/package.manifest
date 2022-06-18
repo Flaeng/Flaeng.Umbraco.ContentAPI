@@ -1,0 +1,5 @@
+﻿{
+    "name": "Flaeng.Umbraco.ContentAPI",
+    "version": "0.1",
+    "allowPackageTelemetry": true
+}

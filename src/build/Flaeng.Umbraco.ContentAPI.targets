@@ -1,0 +1,21 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <FlaengUmbracoContentAPIContentFilesPath>$(MSBuildThisFileDirectory)..\App_Plugins\Flaeng.Umbraco.ContentAPI\**\*.*</FlaengUmbracoContentAPIContentFilesPath>
+    </PropertyGroup>
+
+    <Target Name="CopyFlaengUmbracoContentAPIAssets" BeforeTargets="Build">
+        <ItemGroup>
+            <FlaengUmbracoContentAPIContentFiles Include="$(FlaengUmbracoContentAPIContentFilesPath)" />
+        </ItemGroup>
+        <Message Text="Copying Flaeng.Umbraco.ContentAPI files: $(FlaengUmbracoContentAPIContentFilesPath) - #@(FlaengUmbracoContentAPIContentFiles->Count()) files" Importance="high" />
+        <Copy SourceFiles="@(FlaengUmbracoContentAPIContentFiles)" DestinationFiles="@(FlaengUmbracoContentAPIContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\Flaeng.Umbraco.ContentAPI\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    </Target>
+    
+    <Target Name="ClearFlaengUmbracoContentAPIAssets" BeforeTargets="Clean">
+        <ItemGroup>
+            <FlaengUmbracoContentAPIDir Include="$(MSBuildProjectDirectory)\App_Plugins\Flaeng.Umbraco.ContentAPI\" />
+        </ItemGroup>
+        <Message Text="Clear old Flaeng.Umbraco.ContentAPI data" Importance="high" />
+        <RemoveDir Directories="@(FlaengUmbracoContentAPIDir)" />
+    </Target>
+</Project>
