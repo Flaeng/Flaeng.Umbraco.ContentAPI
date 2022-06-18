@@ -16,7 +16,7 @@ Quite simple. Setup a Umbraco CMS solution and install this package. You then ad
 public void ConfigureServices(IServiceCollection services)
 {
     ...
-    services.AddContentAPI(x => ...);
+    services.AddContentAPI(options => ...);
     ...
 }
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
