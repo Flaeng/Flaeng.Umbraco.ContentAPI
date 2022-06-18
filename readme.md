@@ -11,7 +11,21 @@ This package allows for that.
 
 ## Okay. But how?
 
-Quite simple. Setup a Umbraco CMS solution and install this package. After creating all of your content types and nodes etc. you can browse the /api/contentapi to 
+Quite simple. Setup a Umbraco CMS solution and install this package. You then add 
+public void ConfigureServices(IServiceCollection services)
+{
+    (...)
+    services.AddContentAPI(x => (...));
+    (...)
+}
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    (...)
+    app.UseContentAPI();
+    (...)
+}
+
+After creating all of your content types and nodes etc. you can browse the /api/contentapi to 
 get a HAL+JSON response with the structure for your data. You can then create a new project with a React, VueJS, Angular or something else and consume the API.
 Now your frontend and CMS are decoupled. The API can also be consumed by a mobile app or anything else that can make http requests.
 
