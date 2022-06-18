@@ -1,6 +1,6 @@
 # Umbraco ContentAPI
 
-[![Build and test](https://github.com/Flaeng/Umbraco.ContentAPI/actions/workflows/build-and-test.yml/badge.svg?branch=main&event=check_run)](https://github.com/Flaeng/Umbraco.ContentAPI/actions/workflows/build-and-test.yml)
+[![Build and test](https://github.com/Flaeng/Umbraco.ContentAPI/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/Flaeng/Umbraco.ContentAPI/actions/workflows/build-and-test.yml)
 
 ## What is it?
 
