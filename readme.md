@@ -1,5 +1,7 @@
 # Umbraco ContentAPI
 
+[![Build and test](https://github.com/Flaeng/Umbraco.ContentAPI/actions/workflows/build-and-test.yml/badge.svg?branch=main&event=check_run)](https://github.com/Flaeng/Umbraco.ContentAPI/actions/workflows/build-and-test.yml)
+
 ## What is it?
 
 It's a package for Umbraco 10 that allows you to explore and fetch data from a standardized API. The aim is to follow the [JSON Hypertext Application Language specification](https://tools.ietf.org/id/draft-kelly-json-hal-01.html#:~:text=The%20JSON%20Hypertext%20Application%20Language,exposed%20as%20series%20of%20links.)
