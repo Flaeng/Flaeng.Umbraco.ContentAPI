@@ -9,14 +9,12 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-    working-directory: ./tests
-    - run: dotnet build
-    - run: dotnet test
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      working-directory: ./tests
+      - run: dotnet build
+      - run: dotnet test
