@@ -68,14 +68,12 @@ public class LinkPopulator : ILinkPopulator
 
     public void Populate(ObjectResponse item)
     {
-        // if (options.ExcludeLinks)
-        //     return;
-
-        var dic = new Dictionary<string, HalObject>();
+        if (options.ExcludeLinks)
+            return;
 
         if (item.Parent != null)
         {
-            dic.Add("parent", new HalObject 
+            item.Links.Add("parent", new HalObject 
             {
                 Name = item.Parent.Name,
                 Href = $"/{item.Parent.ContentType.Alias}/{item.Parent.Id}" 
@@ -86,24 +84,22 @@ public class LinkPopulator : ILinkPopulator
         foreach (var childContentType in childContentTypeList)
         {
             var alias = childContentType.Alias;
-            dic.Add(alias, new HalObject 
+            item.Links.Add(alias, new HalObject 
             {
                 Name = childContentType.Name,
                 Href = $"/{item.ContentType.Alias}/{item.Id}/{alias}"
             });
         }
-        
+
         foreach (var property in item.Properties.Where(PropertyTypeIsEnumerableOfPublishedContent))
         {
             var alias = property.Alias;
-            dic.Add(alias, new HalObject 
+            item.Links.Add(alias, new HalObject
             {
                 Name = "",
-                Href = $"/{item.ContentType.Alias}/{item.Id}/{alias}" 
+                Href = $"/{item.ContentType.Alias}/{item.Id}/{alias}"
             });
         }
-        
-        item.Links = dic;
     }
 
     private static bool PropertyTypeIsEnumerableOfPublishedContent(IPublishedProperty prop)

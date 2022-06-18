@@ -8,10 +8,10 @@ namespace Flaeng.Umbraco.ContentAPI.Models;
 [JsonConverter(typeof(ObjectResponseConverter))]
 public class ObjectResponse : PublishedContent
 {
-	[JsonPropertyName("_links")]
-	public Dictionary<string, HalObject> Links { get; set; }
+    [JsonPropertyName("_links")]
+    public Dictionary<string, HalObject> Links { get; } = new Dictionary<string, HalObject>();
 
-	[JsonPropertyName("_embedded")]
+    [JsonPropertyName("_embedded")]
 	public Dictionary<string, CollectionResponse> Embedded { get; set; }
 
 	public ObjectResponse(IPublishedContent content) : base(content)

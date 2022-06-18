@@ -43,9 +43,9 @@ public class ExpandRequestTests : BaseTests
         var ironman = response.Items.Single(x => x.Name == "ironman");
         Assert.NotNull(ironman.Links);
         Assert.NotEmpty(ironman.Links);
-        Assert.Contains(ironman.Links, x => x.Key == "friends" && x.Value != null && x.Value.Href == $"profiles/{ironmanId}/friends");
-        Assert.Contains(ironman.Links, x => x.Key == "photos" && x.Value != null && x.Value.Href == $"profiles/{ironmanId}/photos");
-        Assert.Contains(ironman.Links, x => x.Key == "updates" && x.Value != null && x.Value.Href == $"profiles/{ironmanId}/updates");
+        Assert.Contains(ironman.Links, x => x.Key == "friends" && x.Value != null && x.Value.Href == $"/profiles/{ironmanId}/friends");
+        Assert.Contains(ironman.Links, x => x.Key == "photos" && x.Value != null && x.Value.Href == $"/profiles/{ironmanId}/photos");
+        Assert.Contains(ironman.Links, x => x.Key == "updates" && x.Value != null && x.Value.Href == $"/profiles/{ironmanId}/updates");
     }
     
     // [Fact]
