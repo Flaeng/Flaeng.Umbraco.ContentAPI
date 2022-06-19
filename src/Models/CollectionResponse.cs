@@ -10,10 +10,10 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 namespace Flaeng.Umbraco.ContentAPI.Models;
 
 [JsonConverter(typeof(CollectionResponseConverter))]
-public class CollectionResponse
+public class CollectionResponse : ILinksContainer
 {
     [JsonPropertyName("_links")]
-    public Dictionary<string, HalObject> Links { get; set; }
+    public Dictionary<string, HalObject> Links { get; } = new Dictionary<string, HalObject>();
 
     public int PageSize { get; init; }
     public int PageNumber { get; init; }

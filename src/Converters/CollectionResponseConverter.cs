@@ -21,7 +21,14 @@ public class CollectionResponseConverter : JsonConverter<CollectionResponse>
             var propValue = prop.GetValue(value);
             if (propValue != null)
             {
-                writer.WritePropertyName(prop.Name);
+                switch (prop.Name)
+                {
+                    case "Links": writer.WritePropertyName("_links"); break;
+                    case "Embedded": writer.WritePropertyName("_embedded"); break;
+                    default:
+                        writer.WritePropertyName($"{Char.ToLower(prop.Name[0])}{prop.Name.Substring(1)}"); 
+                        break;
+                }
                 JsonSerializer.Serialize(writer, propValue, options);
             }
         }

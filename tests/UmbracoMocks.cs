@@ -35,6 +35,53 @@ public interface IUmbracoBuilder
         List<UmbracoProperty>? properties = null,
         Action<Mock<IPublishedContent>>? configure = null
         );
+    int AddMediaType(
+        string alias,
+        Action<Mock<IPublishedContentType>>? configure = null
+        );
+    int AddMedia(
+        string contentTypeAlias,
+        string name,
+        int? parentId = null,
+        List<UmbracoProperty>? properties = null,
+        Action<Mock<IPublishedContent>>? configure = null
+        );
+    int AddMemberType(
+        string alias,
+        Action<Mock<IPublishedContentType>>? configure = null
+        );
+    int AddMember(
+        string contentTypeAlias,
+        string name,
+        int? parentId = null,
+        List<UmbracoProperty>? properties = null,
+        Action<Mock<IPublishedContent>>? configure = null
+        );
+    int AddMemberGroupType(
+        string alias,
+        Action<Mock<IPublishedContentType>>? configure = null
+        );
+    int AddMemberGroup(
+        int memberId,
+        int memberGroupId
+        );
+    int AddUserType(
+        string alias,
+        Action<Mock<IPublishedContentType>>? configure = null
+        );
+    int AddUser(
+        string userTypeAlias,
+        string name,
+        List<UmbracoProperty>? properties = null,
+        Action<Mock<IPublishedContent>>? configure = null
+        );
+    int AddForm(
+        string alias,
+        string name,
+        List<object> formFields,
+        Action<Mock<IPublishedContentType>>? configure = null
+        );
+    void AddDictionaryItem(string key, string text);
     IUmbracoApp Build();
 }
 public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
@@ -55,16 +102,10 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
     private readonly Mock<IContentTypeService> contentTypeServiceMock = new Mock<IContentTypeService>();
     public IContentTypeService ContentTypeService => contentTypeServiceMock.Object;
 
-    public static IUmbracoBuilder Create() => new UmbracoBuilder();
-    private UmbracoBuilder()
-    {
-        umbracoContext.Setup(x => x.Content).Returns(contentCache.Object);
+    private readonly Mock<IPublishedMediaCache> mediaCacheMock = new();
+    public IPublishedMediaCache MediaCache => mediaCacheMock.Object;
 
-        runtimeCache
-            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<Func<object?>>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), It.IsAny<string[]>()))
-            .Returns<string, Func<object?>, TimeSpan?, bool, string[]>((p1, p2, p3, p4, p5) => p2.Invoke());
-        AppCaches = new AppCaches(runtimeCache.Object, requestCache.Object, isolatedCaches.Object);
-    }
+    public static IUmbracoBuilder Create() => new UmbracoBuilder();
 
     public IUmbracoApp Build() => this;
 
@@ -73,6 +114,26 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
     readonly Dictionary<string, IList<IPublishedContent>> contentByContentTypeList = new();
     readonly Dictionary<int, IPublishedContent> contentById = new();
     readonly Dictionary<int, IList<IPublishedContent>> contentByParentId = new();
+    readonly Dictionary<string, string> CultureDictionary = new();
+    
+    private UmbracoBuilder()
+    {
+        umbracoContext.Setup(x => x.Content).Returns(contentCache.Object);
+
+        runtimeCache
+            .Setup(x => x.Get(It.IsAny<string>(), It.IsAny<Func<object?>>(), It.IsAny<TimeSpan?>(), It.IsAny<bool>(), It.IsAny<string[]>()))
+            .Returns<string, Func<object?>, TimeSpan?, bool, string[]>((p1, p2, p3, p4, p5) => p2.Invoke());
+        AppCaches = new AppCaches(runtimeCache.Object, requestCache.Object, isolatedCaches.Object);
+
+        umbracoContext.Setup(x => x.Media).Returns(mediaCacheMock.Object);
+
+        // umbracoHelper
+        //     .Setup(x => x.GetDictionaryValue(It.IsAny<string>()))
+        //     .Returns<string>(key => CultureDictionary.TryGetValue(key, out var value) ? value : String.Empty);
+        // umbracoHelper
+        //     .Setup(x => x.GetDictionaryValue(It.IsAny<string>(), It.IsAny<string>()))
+        //     .Returns<string, string>((key, altText) => CultureDictionary.TryGetValue(key, out var value) ? value : altText);
+    }
 
     int contentTypeIdCounter = 1;
     public int AddContentType(
@@ -171,6 +232,53 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 
     private int getLevel(int? parentId)
         => parentId.HasValue ? contentById[parentId.Value].Level + 1 : 0;
+
+    public int AddMediaType(string alias, Action<Mock<IPublishedContentType>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddMedia(string contentTypeAlias, string name, int? parentId = null, List<UmbracoProperty>? properties = null, Action<Mock<IPublishedContent>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddMemberType(string alias, Action<Mock<IPublishedContentType>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddMember(string contentTypeAlias, string name, int? parentId = null, List<UmbracoProperty>? properties = null, Action<Mock<IPublishedContent>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddMemberGroupType(string alias, Action<Mock<IPublishedContentType>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddMemberGroup(int memberId, int memberGroupId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddUserType(string alias, Action<Mock<IPublishedContentType>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddUser(string userTypeAlias, string name, List<UmbracoProperty>? properties = null, Action<Mock<IPublishedContent>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int AddForm(string alias, string name, List<object> formFields, Action<Mock<IPublishedContentType>>? configure = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddDictionaryItem(string key, string text) => CultureDictionary.Add(key, text);
 
     public class UmbracoProperty : IPublishedProperty
     {

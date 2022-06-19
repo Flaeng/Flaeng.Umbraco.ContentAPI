@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.Extensions;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -18,19 +16,23 @@ public interface ILinkPopulator
 {
     LinksObject GetRoot();
     void Populate(ObjectResponse item);
+    void Populate(CollectionResponse coll);
 }
 public class DefaultLinkPopulator : ILinkPopulator
 {
+    protected readonly HttpContext httpContext;
     protected readonly IUmbracoContext umbracoContext;
     protected readonly IContentTypeService contentTypeService;
     protected readonly ContentApiOptions options;
 
     public DefaultLinkPopulator(
+        IHttpContextAccessor httpContextAccessor,
         IUmbracoContextAccessor umbracoContextAccessor,
         IContentTypeService contentTypeService,
         IOptions<ContentApiOptions> options
     )
     {
+        this.httpContext = httpContextAccessor.HttpContext;
         umbracoContextAccessor.TryGetUmbracoContext(out umbracoContext);
         this.contentTypeService = contentTypeService;
         this.options = options.Value;
@@ -42,7 +44,7 @@ public class DefaultLinkPopulator : ILinkPopulator
         if (options.HideLinks)
             return resp;
 
-        resp.Links = new Dictionary<string, HalObject>();
+        AddSelfLink(resp);
 
         if (options.UmbracoOptions.ExposeMedia)
             resp.Links.Add("media", new HalObject { Name = "Media", Href = "/media" });
@@ -68,10 +70,17 @@ public class DefaultLinkPopulator : ILinkPopulator
         return resp;
     }
 
+    private void AddSelfLink(ILinksContainer links)
+    {
+        links.Links.Add("self", new HalObject { Href = httpContext.Request.Path });
+    }
+
     public void Populate(ObjectResponse item)
     {
         if (options.HideLinks)
             return;
+
+        AddSelfLink(item);
 
         if (item.Parent != null)
         {
@@ -108,5 +117,39 @@ public class DefaultLinkPopulator : ILinkPopulator
     {
         return prop.PropertyType.ClrType.IsEnumerableOfIPublishedContent()
             || prop.PropertyType.ModelClrType.IsEnumerableOfIPublishedContent();
+    }
+
+    public void Populate(CollectionResponse coll)
+    {
+        AddSelfLink(coll);
+
+        var currentUrl = httpContext.Request.Path.ToString();
+        var currentQuery = new MutableQueryCollection(httpContext.Request.Query);
+        if (coll.PageNumber != 1)
+        {
+            {
+                var query = currentQuery.Copy();
+                query["$pageNumber"] = "1";
+                coll.Links.Add("first", new HalObject { Href = $"{currentUrl}?{query}" });
+            }
+            {
+                var query = currentQuery.Copy();
+                query["$pageNumber"] = (coll.PageNumber - 1).ToString();
+                coll.Links.Add("previous", new HalObject { Href = $"{currentUrl}?{query}" });
+            }
+        }
+        if (coll.PageNumber != coll.TotalPageCount)
+        {
+            {
+                var query = currentQuery.Copy();
+                query["$pageNumber"] = (coll.PageNumber + 1).ToString();
+                coll.Links.Add("next", new HalObject { Href = $"{currentUrl}?{query}" });
+            }
+            {
+                var query = currentQuery.Copy();
+                query["$pageNumber"] = coll.TotalPageCount.ToString();
+                coll.Links.Add("last", new HalObject { Href = $"{currentUrl}?{query}" });
+            }
+        }
     }
 }

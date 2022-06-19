@@ -1,3 +1,9 @@
+using System.Text.Json;
+
+using Flaeng.Umbraco.ContentAPI.Models;
+
+using Newtonsoft.Json.Linq;
+
 namespace Flaeng.Umbraco.ContentAPI.Tests.HalJson;
 
 public class CollectionRequestTests : BaseTests
@@ -46,12 +52,20 @@ public class CollectionRequestTests : BaseTests
     [Fact]
     public void collection_request_can_paginate()
     {
-        QueryString = "$pageNumber=3";
+        Path = "/contentPage";
         var result = Controller!.Get("contentPage");
+        var resp = result.Value as CollectionResponse;
+        var json = JsonSerializer.Serialize(resp, SerializerOptions);
+        System.Diagnostics.Debug.WriteLine(json);
+        var token = JToken.Parse(json);
+        var nextPagePath = token["_links"]!["next"]!["href"]!.ToString();
+        var split = nextPagePath.Split('?');
 
+        QueryString = split[1];
+        result = Controller!.Get(split[0].TrimStart('/'));
         var response = AssertAndGetCollectionResponse(result);
 
-        Assert.Equal(3, response!.PageNumber);
+        Assert.Equal(2, response!.PageNumber);
     }
 
     [Fact]
@@ -76,24 +90,56 @@ public class CollectionRequestTests : BaseTests
         Assert.Equal(2, response!.PageSize);
     }
 
-    // [Fact]
-    // public void collection_response_has_link_to_first_page()
-    // {
-    // }
+    [Fact]
+    public void collection_response_has_link_to_first_page()
+    {
+        QueryString = "$pageNumber=5";
+        var result = Controller!.Get("contentPage");
 
-    // [Fact]
-    // public void collection_response_has_link_to_previous_page()
-    // {
-    // }
+        var response = AssertAndGetCollectionResponse(result);
+        var json = JsonSerializer.Serialize(response, SerializerOptions);
+        var token = JToken.Parse(json);
 
-    // [Fact]
-    // public void collection_response_has_link_to_next_page()
-    // {
-    // }
+        Assert.NotNull(token["_links"]?["first"]?["href"]);
+    }
 
-    // [Fact]
-    // public void collection_response_has_link_to_last_page()
-    // {
-    // }
+    [Fact]
+    public void collection_response_has_link_to_previous_page()
+    {
+        QueryString = "$pageNumber=5";
+        var result = Controller!.Get("contentPage");
+
+        var response = AssertAndGetCollectionResponse(result);
+        var json = JsonSerializer.Serialize(response, SerializerOptions);
+        var token = JToken.Parse(json);
+
+        Assert.NotNull(token["_links"]?["previous"]?["href"]);
+    }
+
+    [Fact]
+    public void collection_response_has_link_to_next_page()
+    {
+        QueryString = "$pageNumber=5";
+        var result = Controller!.Get("contentPage");
+
+        var response = AssertAndGetCollectionResponse(result);
+        var json = JsonSerializer.Serialize(response, SerializerOptions);
+        var token = JToken.Parse(json);
+
+        Assert.NotNull(token["_links"]?["next"]?["href"]);
+    }
+
+    [Fact]
+    public void collection_response_has_link_to_last_page()
+    {
+        QueryString = "$pageNumber=5";
+        var result = Controller!.Get("contentPage");
+
+        var response = AssertAndGetCollectionResponse(result);
+        var json = JsonSerializer.Serialize(response, SerializerOptions);
+        var token = JToken.Parse(json);
+
+        Assert.NotNull(token["_links"]?["last"]?["href"]);
+    }
 
 }

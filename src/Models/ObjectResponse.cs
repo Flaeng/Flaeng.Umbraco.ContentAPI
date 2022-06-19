@@ -8,7 +8,7 @@ using Umbraco.Cms.Core.Models.PublishedContent;
 namespace Flaeng.Umbraco.ContentAPI.Models;
 
 [JsonConverter(typeof(ObjectResponseConverter))]
-public class ObjectResponse : PublishedContent
+public class ObjectResponse : PublishedContent, ILinksContainer
 {
     [JsonPropertyName("_links")]
     public Dictionary<string, HalObject> Links { get; } = new Dictionary<string, HalObject>();

@@ -33,12 +33,11 @@ public class DefaultResponseBuilder : IResponseBuilder
     public ObjectResponse Build(IPublishedContent content)
     {
         var result = new ObjectResponse(content);
-        result.Links.Add("self", new HalObject { Href = "TODO" });
-        handleObject(result);
+        expandObject(result);
         return result;
     }
 
-    private void handleObject(ObjectResponse result)
+    private void expandObject(ObjectResponse result)
     {
         linkPopulator.Populate(result);
 
@@ -84,10 +83,9 @@ public class DefaultResponseBuilder : IResponseBuilder
             contentColl = contentColl.OrderBy(x => x.GetProperty(orderBy));
 
         var result = new CollectionResponse(contentColl, pageNumber, pageSize);
-
+        linkPopulator.Populate(result);
         foreach (var item in result.Items)
-            handleObject(item);
-
+            expandObject(item);
         return result;
     }
 

@@ -27,7 +27,7 @@ public abstract class BaseTests
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new ObjectResponseConverter() }
+        Converters = { new ObjectResponseConverter(), new CollectionResponseConverter() }
     };
 
     private QueryCollection Query = new();
@@ -37,10 +37,14 @@ public abstract class BaseTests
         set { Query = new QueryCollection(value.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => new StringValues(x.Skip(1).FirstOrDefault()))); }
     }
 
-    protected void Initialize(IUmbracoApp app)
+    protected string Path { get; set; } = "";
+
+    protected void Initialize(IUmbracoApp app, Action<ContentApiOptions>? configureOptions = null)
     {
-        var options = new Mock<IOptions<ContentApiOptions>>();
-        options.Setup(x => x.Value).Returns(new ContentApiOptions { });
+        var optionsMock = new Mock<IOptions<ContentApiOptions>>();
+        var options = new ContentApiOptions();
+        configureOptions?.Invoke(options);
+        optionsMock.Setup(x => x.Value).Returns(options);
 
         var httpContextMock = new Mock<HttpContext>();
         var httpRequestMock = new Mock<HttpRequest>();
@@ -49,6 +53,7 @@ public abstract class BaseTests
         httpRequestMock.Setup(x => x.Headers).Returns(new HeaderDictionary(new Dictionary<string, StringValues> {
             { "content-language", new StringValues("da-dk") }
         }));
+        httpRequestMock.Setup(x => x.Path).Returns(() => $"/" + Path.TrimStart('/'));
         httpRequestMock.Setup(x => x.Query).Returns(() => Query);
         httpRequestMock.Setup(x => x.QueryString).Returns(new QueryString());
         httpContextMock.Setup(x => x.Request).Returns(httpRequestMock.Object);
@@ -59,7 +64,12 @@ public abstract class BaseTests
             .Setup(x => x.TryGetUmbracoContext(out outUmbracoContext));
 
         var filterHelper = new DefaultFilterHandler(httpContextAccessorMock.Object);
-        var linkPopulator = new DefaultLinkPopulator(umbracoContextAccessorMock.Object, app.ContentTypeService, options.Object);
+        
+        var linkPopulator = new DefaultLinkPopulator(
+            httpContextAccessor: httpContextAccessorMock.Object, 
+            umbracoContextAccessor: umbracoContextAccessorMock.Object, 
+            contentTypeService: app.ContentTypeService, 
+            options: optionsMock.Object);
 
         var responseBuilder = new DefaultResponseBuilder(
             httpContextAccessor: httpContextAccessorMock.Object,
@@ -73,7 +83,7 @@ public abstract class BaseTests
             umbracoHelper: null,
             umbracoContextAccessor: umbracoContextAccessorMock.Object,
             cache: app.AppCaches,
-            options: options.Object,
+            options: optionsMock.Object,
             responseBuilder: responseBuilder,
             filterHelper: filterHelper,
             linkPopulator: linkPopulator
