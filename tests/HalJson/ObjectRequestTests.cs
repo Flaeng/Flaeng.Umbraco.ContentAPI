@@ -2,7 +2,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests.HalJson;
 
 public class ObjectRequestTests : BaseTests
 {
-    int subpage2Id;
+    readonly int subpage2Id;
 
     public ObjectRequestTests()
     {

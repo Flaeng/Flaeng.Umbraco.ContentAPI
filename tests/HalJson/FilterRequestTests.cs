@@ -4,9 +4,9 @@ namespace Flaeng.Umbraco.ContentAPI.Tests.HalJson;
 
 public class FilterRequestTests : BaseTests
 {
-    int frontpageId;
-    int chessId;
-    int checkMateId;
+    readonly int frontpageId;
+    readonly int chessId;
+    readonly int checkMateId;
 
     public FilterRequestTests()
     {

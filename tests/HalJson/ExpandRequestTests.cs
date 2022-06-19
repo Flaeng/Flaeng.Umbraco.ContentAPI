@@ -2,7 +2,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests.HalJson;
 
 public class ExpandRequestTests : BaseTests
 {
-    int ironmanId;
+    readonly int ironmanId;
 
     public ExpandRequestTests()
     {

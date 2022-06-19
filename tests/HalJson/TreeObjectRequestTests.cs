@@ -2,7 +2,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests.HalJson;
 
 public class TreeObjectRequestTests : BaseTests
 {
-    int frontpageId;
+    readonly int frontpageId;
 
     public TreeObjectRequestTests()
     {

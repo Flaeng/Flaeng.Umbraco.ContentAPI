@@ -1,8 +1,12 @@
 using System.Text.Json;
+
 using Flaeng.Umbraco.ContentAPI.Converters;
 using Flaeng.Umbraco.ContentAPI.Models;
+
 using Moq;
+
 using Newtonsoft.Json.Linq;
+
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Strings;
 
@@ -10,7 +14,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests.HalJson;
 
 public class ContentPropertyTests : BaseTests
 {
-    JToken token;
+    readonly JToken token;
 
     public ContentPropertyTests()
     {

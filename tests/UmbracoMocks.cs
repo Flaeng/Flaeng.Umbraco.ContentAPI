@@ -1,5 +1,7 @@
 using System;
+
 using Moq;
+
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
@@ -7,6 +9,7 @@ using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common;
+
 using static Flaeng.Umbraco.ContentAPI.Tests.UmbracoBuilder;
 
 namespace Flaeng.Umbraco.ContentAPI.Tests;
@@ -36,20 +39,20 @@ public interface IUmbracoBuilder
 }
 public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 {
-    private Mock<UmbracoHelper> umbracoHelper = new Mock<UmbracoHelper>();
+    private readonly Mock<UmbracoHelper> umbracoHelper = new Mock<UmbracoHelper>();
     public UmbracoHelper UmbracoHelper => umbracoHelper.Object;
 
-    private Mock<IUmbracoContext> umbracoContext = new Mock<IUmbracoContext>();
+    private readonly Mock<IUmbracoContext> umbracoContext = new Mock<IUmbracoContext>();
     public IUmbracoContext UmbracoContext => umbracoContext.Object;
 
-    private Mock<IAppPolicyCache> runtimeCache = new Mock<IAppPolicyCache>();
-    private Mock<IRequestCache> requestCache = new Mock<IRequestCache>();
-    private Mock<IsolatedCaches> isolatedCaches = new Mock<IsolatedCaches>(new Mock<Func<Type, IAppPolicyCache>>().Object);
+    private readonly Mock<IAppPolicyCache> runtimeCache = new Mock<IAppPolicyCache>();
+    private readonly Mock<IRequestCache> requestCache = new Mock<IRequestCache>();
+    private readonly Mock<IsolatedCaches> isolatedCaches = new Mock<IsolatedCaches>(new Mock<Func<Type, IAppPolicyCache>>().Object);
     public AppCaches AppCaches { get; }
 
-    private Mock<IPublishedContentCache> contentCache = new Mock<IPublishedContentCache>();
+    private readonly Mock<IPublishedContentCache> contentCache = new Mock<IPublishedContentCache>();
 
-    private Mock<IContentTypeService> contentTypeServiceMock = new Mock<IContentTypeService>();
+    private readonly Mock<IContentTypeService> contentTypeServiceMock = new Mock<IContentTypeService>();
     public IContentTypeService ContentTypeService => contentTypeServiceMock.Object;
 
     public static IUmbracoBuilder Create() => new UmbracoBuilder();
@@ -174,7 +177,7 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         public IPublishedPropertyType PropertyType => throw new NotImplementedException();
         public string Alias { get; init; }
 
-        Dictionary<string, object?> values = new Dictionary<string, object?>();
+        readonly Dictionary<string, object?> values = new Dictionary<string, object?>();
 
         public UmbracoProperty(string alias)
         {
