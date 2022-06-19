@@ -10,7 +10,7 @@ public class UmbracoOptionsTests
         options.ExposeMedia();
         Assert.True(options.UmbracoOptions.ExposeMedia);
     }
-    
+
     [Fact]
     public void Can_set_expose_members()
     {
@@ -19,7 +19,7 @@ public class UmbracoOptionsTests
         options.ExposeMembers();
         Assert.True(options.UmbracoOptions.ExposeMembers);
     }
-    
+
     [Fact]
     public void Can_set_expose_member_groups()
     {
@@ -28,7 +28,7 @@ public class UmbracoOptionsTests
         options.ExposeMemberGroups();
         Assert.True(options.UmbracoOptions.ExposeMemberGroups);
     }
-    
+
     [Fact]
     public void Can_set_expose_users()
     {
@@ -37,7 +37,7 @@ public class UmbracoOptionsTests
         options.ExposeUsers();
         Assert.True(options.UmbracoOptions.ExposeUsers);
     }
-    
+
     [Fact]
     public void Can_set_expose_forms()
     {
@@ -46,7 +46,7 @@ public class UmbracoOptionsTests
         options.ExposeForms();
         Assert.True(options.UmbracoOptions.ExposeForms);
     }
-    
+
     [Fact]
     public void Can_set_expose_translation_dictionary()
     {
@@ -55,5 +55,5 @@ public class UmbracoOptionsTests
         options.ExposeTranslationDictionary();
         Assert.True(options.UmbracoOptions.ExposeTranslationDictionary);
     }
-    
+
 }

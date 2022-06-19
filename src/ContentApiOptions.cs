@@ -10,10 +10,10 @@ public class ContentApiOptions
     public bool EnableCaching { get; set; }
     public TimeSpan? CacheTimeout { get; set; }
 
-    public bool SmartCachingIsEnabled 
-    { 
-        get => EnableCaching == true && CacheTimeout == null; 
-        set 
+    public bool SmartCachingIsEnabled
+    {
+        get => EnableCaching == true && CacheTimeout == null;
+        set
         {
             if (value)
             {

@@ -23,7 +23,7 @@ public class AllowCrudOf : IAllowCrudOperation
         this.CrudOption.Authorize = condition;
         return this.Options;
     }
-    
+
     public static implicit operator ContentApiOptions(AllowCrudOf aco) => aco.Options;
 }
 public static class ContentApiOptionsExtensions
@@ -102,4 +102,3 @@ public static class ContentApiOptionsExtensions
         return options;
     }
 }
-
