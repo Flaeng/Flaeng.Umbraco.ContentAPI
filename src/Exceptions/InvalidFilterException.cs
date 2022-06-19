@@ -6,7 +6,7 @@ namespace Flaeng.Umbraco.ContentAPI
     public class InvalidFilterException : HalException
     {
         public string FilterText { get; init; }
-        
+
         public InvalidFilterException(string FilterText)
             : base("invalid_filter", $"Invalid filter: {FilterText}")
         {
