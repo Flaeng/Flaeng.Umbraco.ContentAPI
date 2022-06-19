@@ -43,7 +43,7 @@ public class ObjectResponseConverter : JsonConverter<ObjectResponse>
         writer.WriteNumber("creatorId", value.CreatorId);
         writer.WriteString("updateDate", value.UpdateDate);
         writer.WriteNumber("writerId", value.WriterId);
-        
+
         writer.WriteString("key", value.Key);
 
         writer.WriteNumber("parentId", value.Parent?.Id ?? -1);
@@ -67,7 +67,7 @@ public class ObjectResponseConverter : JsonConverter<ObjectResponse>
             }
             else if (propertyValue is HtmlEncodedString hes)
                 writer.WriteStringValue(hes.ToHtmlString());
-            else 
+            else
                 JsonSerializer.Serialize(writer, propertyValue, options);
         }
 

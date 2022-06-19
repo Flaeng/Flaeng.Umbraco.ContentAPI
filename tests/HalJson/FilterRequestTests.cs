@@ -15,20 +15,20 @@ public class FilterRequestTests : BaseTests
             alias: "contentPage");
 
         frontpageId = builder.AddContent(
-            contentTypeAlias: "contentPage", 
-            name: "Frontpage", 
+            contentTypeAlias: "contentPage",
+            name: "Frontpage",
             properties: new List<UmbracoProperty> { new UmbracoProperty("content", null) });
-        
+
         chessId = builder.AddContent(
-            contentTypeAlias: "contentPage", 
-            name: "chess", 
-            parentId: frontpageId, 
+            contentTypeAlias: "contentPage",
+            name: "chess",
+            parentId: frontpageId,
             properties: new List<UmbracoProperty> { new UmbracoProperty("content", null) });
-        
+
         checkMateId = builder.AddContent(
-            contentTypeAlias: "contentPage", 
-            name: "check mate", 
-            parentId: frontpageId, 
+            contentTypeAlias: "contentPage",
+            name: "check mate",
+            parentId: frontpageId,
             properties: new List<UmbracoProperty> { new UmbracoProperty("content", null) });
 
         Initialize(builder.Build());
@@ -45,7 +45,7 @@ public class FilterRequestTests : BaseTests
         Assert.Equal(1, response.TotalItemCount);
         Assert.Equal(1, response.Items.Single().Id);
     }
-    
+
     [Fact]
     public void Can_filter_level_eq()
     {

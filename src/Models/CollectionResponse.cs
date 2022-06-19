@@ -15,12 +15,16 @@ public class CollectionResponse
 
     public int PageSize { get; init; }
     public int PageNumber { get; init; }
-    public int TotalPageCount { get => TotalItemCount == 0 || PageSize == 0 ? 0 
-        : (int)Math.Ceiling((decimal)TotalItemCount / PageSize); }
+    public int TotalPageCount
+    {
+        get => TotalItemCount == 0 || PageSize == 0
+            ? 0
+            : (int)Math.Ceiling((decimal)TotalItemCount / PageSize);
+    }
     public int TotalItemCount { get; init; }
 
     public IEnumerable<ObjectResponse> Items { get; init; }
-    
+
     public CollectionResponse(IEnumerable<IPublishedContent> items, int pageNumber, int pageSize)
     {
         this.TotalItemCount = items.Count();

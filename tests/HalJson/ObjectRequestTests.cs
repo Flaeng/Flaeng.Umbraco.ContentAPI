@@ -19,7 +19,7 @@ public class ObjectRequestTests : BaseTests
     public void object_request_returns_content_id()
     {
         var result = Controller!.Get($"contentPage/{subpage2Id}");
-        
+
         var response = AssertAndGetObjectResponse(result);
 
         Assert.Equal(subpage2Id, response.Id);
@@ -29,7 +29,7 @@ public class ObjectRequestTests : BaseTests
     public void object_request_returns_content_name()
     {
         var result = Controller!.Get($"contentPage/{subpage2Id}");
-        
+
         var response = AssertAndGetObjectResponse(result);
 
         Assert.Equal("Underside #2", response.Name);
@@ -39,7 +39,7 @@ public class ObjectRequestTests : BaseTests
     public void object_request_returns_content_level()
     {
         var result = Controller!.Get($"contentPage/{subpage2Id}");
-        
+
         var response = AssertAndGetObjectResponse(result);
 
         Assert.Equal(1, response.Level);

@@ -51,7 +51,7 @@ public class DefaultFilterHandler : IFilterHandler
 
         var propertyValue = publishedProperty.GetValue(Culture);
 
-        if (propertyValue is IComparable propValue && propValue.GetType() != typeof(string)) 
+        if (propertyValue is IComparable propValue && propValue.GetType() != typeof(string))
         {
             var inputAsPropertyType = Convert.ChangeType(input, propertyValue.GetType());
             return opr switch

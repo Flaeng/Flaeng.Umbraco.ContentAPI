@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Umbraco.Cms.Core;
@@ -17,6 +18,7 @@ namespace Flaeng.Umbraco.ContentAPI;
 [ApiController, Route("api/contentapi")]
 public class ContentApiController : UmbracoApiController
 {
+    protected readonly ILogger<ContentApiController> logger;
     protected readonly UmbracoHelper umbracoHelper;
     protected readonly IUmbracoContext umbracoContext;
     protected readonly AppCaches cache;
@@ -30,6 +32,7 @@ public class ContentApiController : UmbracoApiController
     protected string Culture { get => Request.Headers.ContentLanguage.ToString(); }
 
     public ContentApiController(
+            ILogger<ContentApiController> logger,
             UmbracoHelper umbracoHelper,
             IUmbracoContextAccessor umbracoContextAccessor,
             AppCaches cache,
@@ -39,6 +42,7 @@ public class ContentApiController : UmbracoApiController
             ILinkPopulator linkPopulator
             )
     {
+        this.logger = logger;
         this.umbracoHelper = umbracoHelper;
         umbracoContextAccessor.TryGetUmbracoContext(out this.umbracoContext);
         this.cache = cache;
@@ -67,6 +71,10 @@ public class ContentApiController : UmbracoApiController
         }
         catch (HalException e)
         {
+            logger.LogInformation(e, "ContentAPI request returned non-successfull response");
+            if (e is ContentTypeNotFoundException || e is ContentNotFoundException)
+                return NotFound();
+
             return BadRequest(new BadRequestResponse(e.SystemMessage, e.Message));
         }
     }
@@ -104,7 +112,7 @@ public class ContentApiController : UmbracoApiController
             var property = content.GetProperty(contentType);
             if (property != null)
                 contentColl = property.GetValue() as IEnumerable<IPublishedContent>;
-            else 
+            else
                 contentColl = content.Children.Where(x => x.ContentType.Alias == contentType);
 
             contentColl = filterHelper.ApplyFilter(contentColl);
@@ -124,13 +132,13 @@ public class ContentApiController : UmbracoApiController
 
     private IPublishedContent GetContentById(string contentId, string contentTypeAlias)
     {
-        var content = 
+        var content =
             int.TryParse(contentId, out int contentIntId)
             ? umbracoContext.Content.GetById(contentIntId)
-            
+
             : Guid.TryParse(contentId, out Guid contentGuidId)
             ? umbracoContext.Content.GetById(contentGuidId)
-            
+
             : umbracoContext.Content.GetById(Udi.Create(contentTypeAlias, contentId));
 
         return content == null || content.ContentType.Alias != contentTypeAlias

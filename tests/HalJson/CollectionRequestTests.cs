@@ -17,9 +17,9 @@ public class CollectionRequestTests : BaseTests
     public void collection_request_returns_total_item_count()
     {
         var result = Controller!.Get("contentPage");
-        
+
         var response = AssertAndGetCollectionResponse(result);
-        
+
         Assert.Equal(111, response!.TotalItemCount);
     }
 
@@ -27,9 +27,9 @@ public class CollectionRequestTests : BaseTests
     public void collection_request_has_20_items_as_default()
     {
         var result = Controller!.Get("contentPage");
-        
+
         var response = AssertAndGetCollectionResponse(result);
-        
+
         Assert.Equal(20, response!.Items.Count());
     }
 
@@ -37,9 +37,9 @@ public class CollectionRequestTests : BaseTests
     public void collection_request_returns_first_page_as_default()
     {
         var result = Controller!.Get("contentPage");
-        
+
         var response = AssertAndGetCollectionResponse(result);
-        
+
         Assert.Equal(1, response!.PageNumber);
     }
 
@@ -48,9 +48,9 @@ public class CollectionRequestTests : BaseTests
     {
         QueryString = "$pageNumber=3";
         var result = Controller!.Get("contentPage");
-        
+
         var response = AssertAndGetCollectionResponse(result);
-        
+
         Assert.Equal(3, response!.PageNumber);
     }
 
@@ -58,9 +58,9 @@ public class CollectionRequestTests : BaseTests
     public void collection_request_returns_number_of_pages()
     {
         var result = Controller!.Get("contentPage");
-        
+
         var response = AssertAndGetCollectionResponse(result);
-        
+
         Assert.Equal(6, response!.TotalPageCount);
     }
 
@@ -69,9 +69,9 @@ public class CollectionRequestTests : BaseTests
     {
         QueryString = "$pageSize=2";
         var result = Controller!.Get("contentPage");
-        
+
         var response = AssertAndGetCollectionResponse(result);
-        
+
         Assert.Equal(2, response!.Items.Count());
         Assert.Equal(2, response!.PageSize);
     }

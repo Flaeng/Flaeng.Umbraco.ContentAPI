@@ -15,6 +15,6 @@ public class HalObject
 }
 public class LinksObject
 {
-	[JsonPropertyName("_links")]
-	public Dictionary<string, HalObject> Links { get; set; }
+    [JsonPropertyName("_links")]
+    public Dictionary<string, HalObject> Links { get; set; }
 }

@@ -26,9 +26,9 @@ public abstract class BaseTests
     };
 
     private QueryCollection Query = new();
-    protected string QueryString 
+    protected string QueryString
     {
-        get { return Query.Count == 0 ? String.Empty : String.Join("&", Query.Select(x => $"{x.Key}={x.Value}")); } 
+        get { return Query.Count == 0 ? String.Empty : String.Join("&", Query.Select(x => $"{x.Key}={x.Value}")); }
         set { Query = new QueryCollection(value.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => new StringValues(x.Skip(1).FirstOrDefault()))); }
     }
 
@@ -58,9 +58,9 @@ public abstract class BaseTests
 
         var responseBuilder = new DefaultResponseBuilder(
             httpContextAccessor: httpContextAccessorMock.Object,
-            linkPopulator: linkPopulator    
+            linkPopulator: linkPopulator
         );
-        
+
         Controller = new ContentApiController(
             umbracoHelper: null,
             umbracoContextAccessor: umbracoContextAccessorMock.Object,

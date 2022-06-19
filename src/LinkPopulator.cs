@@ -72,10 +72,10 @@ public class DefaultLinkPopulator : ILinkPopulator
 
         if (item.Parent != null)
         {
-            item.Links.Add("parent", new HalObject 
+            item.Links.Add("parent", new HalObject
             {
                 Name = item.Parent.Name,
-                Href = $"/{item.Parent.ContentType.Alias}/{item.Parent.Id}" 
+                Href = $"/{item.Parent.ContentType.Alias}/{item.Parent.Id}"
             });
         }
 
@@ -83,7 +83,7 @@ public class DefaultLinkPopulator : ILinkPopulator
         foreach (var childContentType in childContentTypeList)
         {
             var alias = childContentType.Alias;
-            item.Links.Add(alias, new HalObject 
+            item.Links.Add(alias, new HalObject
             {
                 Name = childContentType.Name,
                 Href = $"/{item.ContentType.Alias}/{item.Id}/{alias}"

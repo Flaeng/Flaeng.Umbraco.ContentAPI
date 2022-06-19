@@ -9,12 +9,12 @@ public class ExpandRequestTests : BaseTests
         var builder = UmbracoBuilder.Create();
 
         // Yes, I am stealing demo-data from this talk: https://www.youtube.com/watch?v=g8E1B7rTZBI 
-        
+
         var friendsContentTypeId = builder.AddContentType("friends");
         var photosContentTypeId = builder.AddContentType("photos");
         var updatesContentTypeId = builder.AddContentType("updates");
-        var profilesContentTypeId = builder.AddContentType("profiles", 
-            childrenContentTypeId: new [] { friendsContentTypeId, photosContentTypeId, updatesContentTypeId });
+        var profilesContentTypeId = builder.AddContentType("profiles",
+            childrenContentTypeId: new[] { friendsContentTypeId, photosContentTypeId, updatesContentTypeId });
 
         ironmanId = builder.AddContent("profiles", "ironman");
         var spideyId = builder.AddContent("profiles", "spidey");
@@ -47,7 +47,7 @@ public class ExpandRequestTests : BaseTests
         Assert.Contains(ironman.Links, x => x.Key == "photos" && x.Value != null && x.Value.Href == $"/profiles/{ironmanId}/photos");
         Assert.Contains(ironman.Links, x => x.Key == "updates" && x.Value != null && x.Value.Href == $"/profiles/{ironmanId}/updates");
     }
-    
+
     // [Fact]
     // public void Can_expand()
     // {
@@ -101,7 +101,7 @@ public class ExpandRequestTests : BaseTests
     //     var photos = token.Value<JToken[]>("photos");
     //     Assert.NotNull(photos);
     //     Assert.NotEmpty(photos);
-        
+
     //     var friends = token.Value<JToken[]>("friends");
     //     Assert.NotNull(friends);
     //     Assert.NotEmpty(friends);
@@ -127,7 +127,7 @@ public class ExpandRequestTests : BaseTests
     //     var photoComments = photos!.First().Value<JToken[]>("comments");
     //     Assert.NotNull(photoComments);
     //     Assert.NotEmpty(photoComments);
-        
+
     //     var friends = token.Value<JToken[]>("friends");
     //     Assert.NotNull(friends);
     //     Assert.NotEmpty(friends);

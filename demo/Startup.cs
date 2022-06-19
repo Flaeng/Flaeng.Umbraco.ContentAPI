@@ -53,7 +53,7 @@ namespace demo
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseContentAPI();
 
             app.UseUmbraco()
