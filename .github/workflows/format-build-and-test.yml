@@ -1,0 +1,37 @@
+name: Format, build and test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - run: dotnet build
+      - run: dotnet test
+        working-directory: ./tests
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - run: dotnet format          
+      - name: Commit formatting
+        continue-on-error: true
+        run: |
+          git config --global user.name '@Flaeng'
+          git config --global user.email 'flaeng@users.noreply.github.com'
+          git commit -am "Formatted code"
+          git push
