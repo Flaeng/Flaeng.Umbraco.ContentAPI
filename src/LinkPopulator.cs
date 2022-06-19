@@ -39,7 +39,7 @@ public class DefaultLinkPopulator : ILinkPopulator
     public LinksObject GetRoot()
     {
         var resp = new LinksObject();
-        if (options.ExcludeLinks)
+        if (options.HideLinks)
             return resp;
 
         resp.Links = new Dictionary<string, HalObject>();
@@ -70,7 +70,7 @@ public class DefaultLinkPopulator : ILinkPopulator
 
     public void Populate(ObjectResponse item)
     {
-        if (options.ExcludeLinks)
+        if (options.HideLinks)
             return;
 
         if (item.Parent != null)

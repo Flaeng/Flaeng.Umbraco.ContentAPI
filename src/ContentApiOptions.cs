@@ -8,15 +8,29 @@ namespace Flaeng.Umbraco.ContentAPI;
 public class ContentApiOptions
 {
     public bool EnableCaching { get; set; }
-    public TimeSpan? CacheTimeout { get; set; } = TimeSpan.FromHours(1);
+    public TimeSpan? CacheTimeout { get; set; }
 
-    public bool ExcludeLinks { get; set; }
+    public bool SmartCachingIsEnabled 
+    { 
+        get => EnableCaching == true && CacheTimeout == null; 
+        set 
+        {
+            if (value)
+            {
+                EnableCaching = true;
+                CacheTimeout = null;
+            }
+            else EnableCaching = false;
+        }
+    }
 
-    public UmbracoOptions UmbracoOptions { get; set; } = new UmbracoOptions();
+    public bool HideLinks { get; set; }
 
-    public CrudOptions CreationOptions { get; set; }
-    public CrudOptions EditingOptions { get; set; }
-    public CrudOptions DeletionOptions { get; set; }
+    public UmbracoOptions UmbracoOptions { get; } = new UmbracoOptions();
+
+    public CrudOptions CreationOptions { get; } = new CrudOptions();
+    public CrudOptions EditingOptions { get; } = new CrudOptions();
+    public CrudOptions DeletionOptions { get; } = new CrudOptions();
 }
 public class UmbracoOptions
 {
@@ -27,12 +41,15 @@ public class UmbracoOptions
     public bool ExposeForms { get; set; }
     public bool ExposeTranslationDictionary { get; set; }
 }
-public class CrudOptions
+public class CrudOptions : List<ContentTypeCrudOption>
 {
-    public List<string> ContentTypes { get; set; }
+}
+public class ContentTypeCrudOption
+{
+    public string ContentTypeAlias { get; init; }
     public Func<CrudRequest, bool> Authorize { get; set; }
 }
 public class CrudRequest
 {
-    public IPublishedContent Content { get; set; }
+    public IPublishedContent Content { get; init; }
 }
