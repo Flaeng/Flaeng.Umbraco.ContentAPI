@@ -9,6 +9,7 @@ using Flaeng.Umbraco.ContentAPI.Models;
 using System.Text.Json;
 using Flaeng.Umbraco.ContentAPI.Converters;
 using Umbraco.Cms.Core.Web;
+using Microsoft.Extensions.Logging;
 
 namespace Flaeng.Umbraco.ContentAPI.Tests;
 
@@ -61,7 +62,10 @@ public abstract class BaseTests
             linkPopulator: linkPopulator
         );
 
+        var logger = new Mock<ILogger<ContentApiController>>();
+
         Controller = new ContentApiController(
+            logger: logger.Object,
             umbracoHelper: null,
             umbracoContextAccessor: umbracoContextAccessorMock.Object,
             cache: app.AppCaches,

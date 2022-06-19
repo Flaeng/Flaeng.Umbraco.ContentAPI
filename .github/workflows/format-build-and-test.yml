@@ -17,7 +17,6 @@ jobs:
           dotnet-version: 6.0.x
       - run: dotnet build
       - run: dotnet test
-        working-directory: ./tests
 
   format:
     runs-on: ubuntu-latest
