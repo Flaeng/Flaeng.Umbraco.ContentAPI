@@ -14,7 +14,7 @@ public class ObjectResponse : PublishedContent
     [JsonPropertyName("_embedded")]
     public Dictionary<string, CollectionResponse> Embedded { get; set; }
 
-    public ObjectResponse(IPublishedContent content) 
+    public ObjectResponse(IPublishedContent content)
         : base(content)
     {
     }
