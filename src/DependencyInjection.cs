@@ -22,5 +22,7 @@ public static class IApplicationBuilderExtensions
 {
     public static void UseContentAPI(this IApplicationBuilder builder)
     {
+        // Not sure what to put here yet.
+        // But we might as well make it now so we have it in the future
     }
 }
