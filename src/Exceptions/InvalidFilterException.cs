@@ -3,11 +3,14 @@ using System;
 namespace Flaeng.Umbraco.ContentAPI
 {
     [Serializable]
-    internal class InvalidFilterException : HalException
+    public class InvalidFilterException : HalException
     {
-        public InvalidFilterException(string filterText)
-            : base("invalid_filter", $"Invalid filter: {filterText}")
+        public string FilterText { get; init; }
+        
+        public InvalidFilterException(string FilterText)
+            : base("invalid_filter", $"Invalid filter: {FilterText}")
         {
+            this.FilterText = FilterText;
         }
     }
 }

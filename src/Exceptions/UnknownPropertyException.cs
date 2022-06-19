@@ -3,11 +3,16 @@ using System;
 namespace Flaeng.Umbraco.ContentAPI
 {
     [Serializable]
-    internal class UnknownPropertyException : HalException
+    public class UnknownPropertyException : HalException
     {
-        public UnknownPropertyException(string contentTypeAlias, string propertyAlias)
-            : base("unknown_property", $"Failed to find property with alias '{propertyAlias}' on content type with alias '{contentTypeAlias}'")
+        public string ContentTypeAlias{ get; init; }
+        public string PropertyAlias{ get; init; }
+        
+        public UnknownPropertyException(string ContentTypeAlias, string PropertyAlias)
+            : base("unknown_property", $"Failed to find property with alias '{PropertyAlias}' on content type with alias '{ContentTypeAlias}'")
         {
+            this.ContentTypeAlias = ContentTypeAlias;
+            this.PropertyAlias = PropertyAlias;
         }
     }
 }

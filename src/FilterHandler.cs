@@ -62,7 +62,7 @@ public class DefaultFilterHandler : IFilterHandler
                 "gt" => propValue.CompareTo(inputAsPropertyType) == 1,
                 "lt" => propValue.CompareTo(inputAsPropertyType) == -1,
                 "like" => propValue?.ToString()?.Contains(input, StringComparison.InvariantCultureIgnoreCase) ?? false,
-                _ => throw new Exception($"Unknown operator '{opr}'"),
+                _ => throw new UnknownOperatorException(opr),
             };
         }
         var propertyValueString = propertyValue?.ToString() ?? "";
@@ -72,7 +72,7 @@ public class DefaultFilterHandler : IFilterHandler
             "gt" => propertyValueString.CompareTo(input) == 1,
             "lt" => propertyValueString.CompareTo(input) == -1,
             "like" => propertyValueString?.Contains(input, StringComparison.InvariantCultureIgnoreCase) ?? false,
-            _ => throw new Exception($"Unknown operator '{opr}'"),
+            _ => throw new UnknownOperatorException(opr),
         };
     }
 }
