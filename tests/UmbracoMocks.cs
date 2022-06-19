@@ -29,8 +29,8 @@ public interface IUmbracoBuilder
         string contentTypeAlias,
         string name,
         int? parentId = null,
-        Action<Mock<IPublishedContent>>? configure = null,
-        Action<List<UmbracoProperty>>? configureProperties = null
+        List<UmbracoProperty>? properties = null,
+        Action<Mock<IPublishedContent>>? configure = null
         );
     IUmbracoApp Build();
 }
@@ -82,9 +82,9 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         contentType.Setup(x => x.Id).Returns(contentTypeIdCounter);
         contentType.Setup(x => x.Alias).Returns(alias);
         configure?.Invoke(contentType);
-        contentTypeList.Add(alias, contentType.Object);
+        contentTypeList.Add(alias.ToLower(), contentType.Object);
         contentCache.Setup(x => x.GetContentType(alias)).Returns(contentType.Object);
-        contentCache.Setup(x => x.GetByContentType(contentType.Object)).Returns(() => contentByContentTypeList[alias]);
+        contentCache.Setup(x => x.GetByContentType(contentType.Object)).Returns(() => contentByContentTypeList[alias.ToLower()]);
 
         var contentTypeModel = new Mock<IContentType>();
         contentTypeModel.Setup(x => x.Id).Returns(contentTypeIdCounter);
@@ -109,11 +109,11 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         string contentTypeAlias,
         string name,
         int? parentId = null,
-        Action<Mock<IPublishedContent>>? configure = null,
-        Action<List<UmbracoProperty>>? configureProperties = null
+        List<UmbracoProperty>? properties = null,
+        Action<Mock<IPublishedContent>>? configure = null
         )
     {
-        if (!contentTypeList.TryGetValue(contentTypeAlias, out var contentType))
+        if (!contentTypeList.TryGetValue(contentTypeAlias.ToLower(), out var contentType))
             throw new Exception($"Missing ContentType with alias '{contentTypeAlias}'");
 
         var content = new Mock<IPublishedContent>();
@@ -135,22 +135,23 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         configure?.Invoke(content);
         contentCache.Setup(x => x.GetById(contentIdCounter)).Returns(content.Object);
 
-        List<UmbracoProperty> properties = new();
+        List<UmbracoProperty> propertyList = new();
 
-        properties.Add(new UmbracoProperty("Id", contentIdCounter));
-        properties.Add(new UmbracoProperty("Name", name));
-        properties.Add(new UmbracoProperty("Level", level));
+        propertyList.Add(new UmbracoProperty("Id", contentIdCounter));
+        propertyList.Add(new UmbracoProperty("Name", name));
+        propertyList.Add(new UmbracoProperty("Level", level));
 
-        configureProperties?.Invoke(properties);
+        if (properties != null)
+            propertyList.AddRange(properties);
 
-        Dictionary<string, UmbracoProperty> propertiesLookup = properties.ToDictionary(x => x.Alias.ToLower());
+        Dictionary<string, UmbracoProperty> propertiesLookup = propertyList.ToDictionary(x => x.Alias.ToLower());
 
         content
             .Setup(x => x.GetProperty(It.IsAny<string>()))
             .Returns<string>(p1 => propertiesLookup.TryGetValue(p1, out var result) ? result : null);
 
-        if (!contentByContentTypeList.TryGetValue(contentTypeAlias, out var contentList))
-            contentByContentTypeList.Add(contentTypeAlias, contentList = new List<IPublishedContent>());
+        if (!contentByContentTypeList.TryGetValue(contentTypeAlias.ToLower(), out var contentList))
+            contentByContentTypeList.Add(contentTypeAlias.ToLower(), contentList = new List<IPublishedContent>());
         contentList.Add(content.Object);
 
         contentById.Add(contentIdCounter, content.Object);

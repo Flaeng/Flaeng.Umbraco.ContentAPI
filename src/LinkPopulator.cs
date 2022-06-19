@@ -5,7 +5,6 @@ using System.Linq;
 using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.Extensions;
 using Microsoft.Extensions.Options;
-using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
@@ -17,13 +16,13 @@ public interface ILinkPopulator
     LinksObject GetRoot();
     void Populate(ObjectResponse item);
 }
-public class LinkPopulator : ILinkPopulator
+public class DefaultLinkPopulator : ILinkPopulator
 {
     protected readonly IUmbracoContext umbracoContext;
     protected readonly IContentTypeService contentTypeService;
     protected readonly ContentApiOptions options;
 
-    public LinkPopulator(
+    public DefaultLinkPopulator(
         IUmbracoContextAccessor umbracoContextAccessor,
         IContentTypeService contentTypeService,
         IOptions<ContentApiOptions> options

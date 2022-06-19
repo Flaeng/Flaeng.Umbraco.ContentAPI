@@ -11,9 +11,9 @@ public static class IServiceCollectionExtensions
         configure ??= x => { };
         services.Configure<ContentApiOptions>(configure);
 
-        services.AddScoped<IFilterHelper, FilterHelper>();
-        services.AddScoped<ILinkPopulator, LinkPopulator>();
-        services.AddScoped<IResponseBuilder, ResponseBuilder>();
+        services.AddScoped<IFilterHandler, DefaultFilterHandler>();
+        services.AddScoped<ILinkPopulator, DefaultLinkPopulator>();
+        services.AddScoped<IResponseBuilder, DefaultResponseBuilder>();
     }
 }
 

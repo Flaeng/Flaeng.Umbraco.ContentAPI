@@ -12,13 +12,13 @@ public interface IResponseBuilder
     ObjectResponse Build(IPublishedContent content);
     CollectionResponse Build(IEnumerable<IPublishedContent> contentColl);
 }
-public class ResponseBuilder : IResponseBuilder
+public class DefaultResponseBuilder : IResponseBuilder
 {
     protected readonly HttpContext httpContext;
     protected HttpRequest Request => httpContext.Request;
     protected readonly ILinkPopulator linkPopulator;
 
-    public ResponseBuilder(
+    public DefaultResponseBuilder(
         IHttpContextAccessor httpContextAccessor,
         ILinkPopulator linkPopulator
         )

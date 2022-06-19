@@ -37,7 +37,7 @@ namespace demo
                 .AddComposers()
                 .Build();
 
-            services.AddContentAPI(x => x.DisableCaching = true);
+            services.AddContentAPI();
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ namespace Flaeng.Umbraco.ContentAPI;
 
 public class ContentApiOptions
 {
-    public bool DisableCaching { get; set; }
+    public bool EnableCaching { get; set; }
     public TimeSpan? CacheTimeout { get; set; } = TimeSpan.FromHours(1);
 
     public bool ExcludeLinks { get; set; }

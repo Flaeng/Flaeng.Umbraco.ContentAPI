@@ -53,10 +53,10 @@ public abstract class BaseTests
         umbracoContextAccessorMock
             .Setup(x => x.TryGetUmbracoContext(out outUmbracoContext));
 
-        var filterHelper = new FilterHelper(httpContextAccessorMock.Object);
-        var linkPopulator = new LinkPopulator(umbracoContextAccessorMock.Object, app.ContentTypeService, options.Object);
+        var filterHelper = new DefaultFilterHandler(httpContextAccessorMock.Object);
+        var linkPopulator = new DefaultLinkPopulator(umbracoContextAccessorMock.Object, app.ContentTypeService, options.Object);
 
-        var responseBuilder = new ResponseBuilder(
+        var responseBuilder = new DefaultResponseBuilder(
             httpContextAccessor: httpContextAccessorMock.Object,
             linkPopulator: linkPopulator    
         );

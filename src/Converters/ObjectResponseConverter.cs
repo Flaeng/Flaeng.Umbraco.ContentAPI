@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Flaeng.Umbraco.ContentAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Strings;
 
 namespace Flaeng.Umbraco.ContentAPI.Converters;
 public class ObjectResponseConverter : JsonConverter<ObjectResponse>
@@ -64,7 +65,10 @@ public class ObjectResponseConverter : JsonConverter<ObjectResponse>
                 writer.WriteStartObject();
                 writer.WriteEndObject();
             }
-            else JsonSerializer.Serialize(writer, propertyValue, options);
+            else if (propertyValue is HtmlEncodedString hes)
+                writer.WriteStringValue(hes.ToHtmlString());
+            else 
+                JsonSerializer.Serialize(writer, propertyValue, options);
         }
 
         writer.WriteEndObject();

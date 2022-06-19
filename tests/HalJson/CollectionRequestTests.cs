@@ -76,4 +76,24 @@ public class CollectionRequestTests : BaseTests
         Assert.Equal(2, response!.PageSize);
     }
 
+    // [Fact]
+    // public void collection_response_has_link_to_first_page()
+    // {
+    // }
+
+    // [Fact]
+    // public void collection_response_has_link_to_previous_page()
+    // {
+    // }
+
+    // [Fact]
+    // public void collection_response_has_link_to_next_page()
+    // {
+    // }
+
+    // [Fact]
+    // public void collection_response_has_link_to_last_page()
+    // {
+    // }
+
 }

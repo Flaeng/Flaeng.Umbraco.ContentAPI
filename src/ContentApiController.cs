@@ -1,19 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-
-using Flaeng.Umbraco.ContentAPI.Models;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-using Newtonsoft.Json;
-
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Cache;
 using Umbraco.Cms.Core.Models.PublishedContent;
-using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common;
 using Umbraco.Cms.Web.Common.Controllers;
@@ -28,15 +22,11 @@ public class ContentApiController : UmbracoApiController
     protected readonly AppCaches cache;
     protected readonly ContentApiOptions options;
     protected readonly IResponseBuilder responseBuilder;
-    protected readonly IFilterHelper filterHelper;
+    protected readonly IFilterHandler filterHelper;
     protected readonly ILinkPopulator linkPopulator;
 
-    protected object NotFoundResponse = new
-    {
-        errorCode = 404,
-        error = "not_found",
-        message = "Page not found"
-    };
+    public record BadRequestResponse(string error, string message);
+    protected BadRequestResponse NotFoundResponse = new BadRequestResponse("not_found", "Page not found");
     protected string Culture { get => Request.Headers.ContentLanguage.ToString(); }
 
     public ContentApiController(
@@ -45,7 +35,7 @@ public class ContentApiController : UmbracoApiController
             AppCaches cache,
             IOptions<ContentApiOptions> options,
             IResponseBuilder responseBuilder,
-            IFilterHelper filterHelper,
+            IFilterHandler filterHelper,
             ILinkPopulator linkPopulator
             )
     {
@@ -61,17 +51,24 @@ public class ContentApiController : UmbracoApiController
     [HttpGet, Route("{*path}")]
     public ActionResult<object> Get(string path)
     {
-        if (options.DisableCaching)
-            return GetResult(path);
+        try
+        {
+            if (!options.EnableCaching)
+                return GetResult(path);
 
-        var cacheKey = $"{Culture}_{path}";
-        var result = cache.RuntimeCache.Get(
-                key: cacheKey,
-                factory: () => GetResult(path),
-                timeout: options.CacheTimeout,
-                isSliding: true);
+            var cacheKey = $"{Culture}_{path}";
+            var result = cache.RuntimeCache.Get(
+                    key: cacheKey,
+                    factory: () => GetResult(path),
+                    timeout: options.CacheTimeout,
+                    isSliding: true);
 
-        return result;
+            return result;
+        }
+        catch (HalException e)
+        {
+            return BadRequest(new BadRequestResponse(e.SystemMessage, e.Message));
+        }
     }
 
     private object GetResult(string path)
@@ -86,7 +83,7 @@ public class ContentApiController : UmbracoApiController
         {
             var rootContentType = umbracoContext.Content.GetContentType(rootContentTypeAlias);
             if (rootContentType == null)
-                return NotFound();
+                throw new ContentTypeNotFoundException(rootContentTypeAlias);
 
             var contentColl = umbracoContext.Content.GetByContentType(rootContentType);
             contentColl = filterHelper.ApplyFilter(contentColl);
@@ -119,7 +116,7 @@ public class ContentApiController : UmbracoApiController
             var contentId = pathSplit[pathSplit.Length - 1];
             var content = GetContentById(contentId, contentType);
             if (content == null)
-                return NotFound();
+                throw new ContentNotFoundException(contentType, contentId);
 
             return responseBuilder.Build(content);
         }
