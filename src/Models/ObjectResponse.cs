@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-
 using Flaeng.Umbraco.ContentAPI.Converters;
-
 using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace Flaeng.Umbraco.ContentAPI.Models;
