@@ -21,7 +21,7 @@ public class HalObjectConverter : JsonConverter<HalObject>
             var propValue = prop.GetValue(value);
             if (propValue != null)
             {
-                writer.WritePropertyName($"{Char.ToLower(prop.Name[0])}{prop.Name.Substring(1)}"); 
+                writer.WritePropertyName($"{Char.ToLower(prop.Name[0])}{prop.Name.Substring(1)}");
                 JsonSerializer.Serialize(writer, propValue, options);
             }
         }

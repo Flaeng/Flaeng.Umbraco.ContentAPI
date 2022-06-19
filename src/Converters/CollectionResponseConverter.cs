@@ -26,7 +26,7 @@ public class CollectionResponseConverter : JsonConverter<CollectionResponse>
                     case "Links": writer.WritePropertyName("_links"); break;
                     case "Embedded": writer.WritePropertyName("_embedded"); break;
                     default:
-                        writer.WritePropertyName($"{Char.ToLower(prop.Name[0])}{prop.Name.Substring(1)}"); 
+                        writer.WritePropertyName($"{Char.ToLower(prop.Name[0])}{prop.Name.Substring(1)}");
                         break;
                 }
                 JsonSerializer.Serialize(writer, propValue, options);

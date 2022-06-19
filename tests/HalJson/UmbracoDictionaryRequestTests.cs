@@ -15,12 +15,12 @@ public class UmbracoDictionaryRequestTests : BaseTests
     [Fact]
     public void Can_get_dictionary()
     {
-        
+
     }
-    
+
     [Fact]
     public void Can_get_single_media()
     {
     }
-    
+
 }

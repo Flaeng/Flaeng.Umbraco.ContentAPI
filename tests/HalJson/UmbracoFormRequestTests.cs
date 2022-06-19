@@ -13,10 +13,10 @@ public class UmbracoFormRequestTests : BaseTests
     public void Can_get_media_list()
     {
     }
-    
+
     [Fact]
     public void Can_get_single_media()
     {
     }
-    
+
 }

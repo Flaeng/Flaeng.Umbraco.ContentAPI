@@ -115,7 +115,7 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
     readonly Dictionary<int, IPublishedContent> contentById = new();
     readonly Dictionary<int, IList<IPublishedContent>> contentByParentId = new();
     readonly Dictionary<string, string> CultureDictionary = new();
-    
+
     private UmbracoBuilder()
     {
         umbracoContext.Setup(x => x.Content).Returns(contentCache.Object);
