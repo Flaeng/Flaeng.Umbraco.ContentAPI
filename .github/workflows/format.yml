@@ -17,6 +17,7 @@ jobs:
           dotnet-version: 6.0.x
       - run: dotnet format          
       - name: Commit formatting
+        continue-on-error: true
         run: |
           git config --global user.name '@Flaeng'
           git config --global user.email 'flaeng@users.noreply.github.com'
