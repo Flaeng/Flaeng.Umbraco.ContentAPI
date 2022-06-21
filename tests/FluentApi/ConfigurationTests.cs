@@ -14,7 +14,6 @@ public class ConfigurationTests
     readonly IOptions<ContentApiOptions>? bindedOptions;
     readonly IOptions<ContentApiOptions>? configuredOptions;
     readonly IOptions<ContentApiOptions>? gottenOptions;
-
     readonly string json = @"
         {
             ""ContentApiOptions"": {
@@ -39,7 +38,7 @@ public class ConfigurationTests
             builder.Services.AddOptions<ContentApiOptions>(IContentApiOptions.ConfigurationName);
 
             var section = builder.Configuration.GetSection(IContentApiOptions.ConfigurationName);
-            builder.Services.Configure<IContentApiOptions>(section);
+            builder.Services.Configure<ContentApiOptions>(section);
 
             var app = builder.Build();
             configuredOptions = app.Services.GetService<IOptions<ContentApiOptions>>();
@@ -79,13 +78,10 @@ public class ConfigurationTests
     }
 
     [Fact]
-    public void Can_bind_options_from_config()
-    {
-        VerifyOptions(bindedOptions);
-    }
+    public void Can_configure_options_from_config() => VerifyOptions(configuredOptions);
 
     [Fact]
-    public void Can_configure_options_from_config() => VerifyOptions(configuredOptions);
+    public void Can_bind_options_from_config() => VerifyOptions(bindedOptions);
 
     [Fact]
     public void Can_get_gotten_options_from_config() => VerifyOptions(gottenOptions);

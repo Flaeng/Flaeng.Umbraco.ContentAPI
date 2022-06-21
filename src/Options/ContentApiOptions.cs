@@ -9,6 +9,7 @@ public interface IContentApiOptions : IFluentContentApiOptions
     TimeSpan? CacheTimeout { get; set; }
     bool EnableSmartCaching { get; set; }
     bool HideLinks { get; set; }
+    string JwtPrivateKey { get; set; }
     UmbracoOptions UmbracoOptions { get; }
     CrudOptions CreationOptions { get; }
     CrudOptions EditingOptions { get; }
@@ -21,6 +22,7 @@ public partial class ContentApiOptions : IContentApiOptions
     public bool EnableSmartCaching{ get; set; }
 
     public bool HideLinks { get; set; }
+    public string JwtPrivateKey { get; set; }
 
     public UmbracoOptions UmbracoOptions { get; } = new UmbracoOptions();
 

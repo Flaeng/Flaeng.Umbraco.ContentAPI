@@ -14,6 +14,7 @@ public interface IFluentContentApiOptions
     IContentApiOptions UseCachingWithTimeout(TimeSpan timeout);
     IContentApiOptions UseCachingWithSmartCaching();
     IContentApiOptions IgnoreLinks();
+    IContentApiOptions UseJwtWithPrivateKey(string privateKey);
     IAllowCrudOperation AllowCreationOf(string contentTypeAlias);
     IAllowCrudOperation AllowEditingOf(string contentTypeAlias);
     IAllowCrudOperation AllowDeletionOf(string contentTypeAlias);
@@ -75,6 +76,12 @@ public partial class ContentApiOptions : IFluentContentApiOptions, IAllowCrudOpe
     public IContentApiOptions IgnoreLinks()
     {
         this.HideLinks = true;
+        return this;
+    }
+
+    public IContentApiOptions UseJwtWithPrivateKey(string privateKey)
+    {
+        this.JwtPrivateKey = privateKey;
         return this;
     }
 
