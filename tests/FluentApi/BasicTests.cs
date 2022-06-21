@@ -13,11 +13,11 @@ public class BasicTests
 
         IAllowCrudOperation opr;
         options = opr = options.AllowCreationOf("test");
-        Assert.Contains(options.CreationOptions, 
+        Assert.Contains(options.CreationOptions,
             x => x.ContentTypeAlias == "test" && x.Authorize == null);
 
         opr.If(x => true);
-        Assert.Contains(options.CreationOptions, 
+        Assert.Contains(options.CreationOptions,
             x => x.ContentTypeAlias == "test" && x.Authorize != null);
     }
 
@@ -29,11 +29,11 @@ public class BasicTests
 
         IAllowCrudOperation opr;
         options = opr = options.AllowEditingOf("test");
-        Assert.Contains(options.EditingOptions, 
+        Assert.Contains(options.EditingOptions,
             x => x.ContentTypeAlias == "test" && x.Authorize == null);
 
         opr.If(x => true);
-        Assert.Contains(options.EditingOptions, 
+        Assert.Contains(options.EditingOptions,
             x => x.ContentTypeAlias == "test" && x.Authorize != null);
     }
 
@@ -42,7 +42,7 @@ public class BasicTests
     {
         IContentApiOptions options = new ContentApiOptions();
         Assert.Equal(default, options.HideLinks);
-        
+
         options = options.IgnoreLinks();
         Assert.True(options.HideLinks);
     }
@@ -53,7 +53,7 @@ public class BasicTests
         IContentApiOptions options = new ContentApiOptions();
         Assert.Equal(default, options.EnableCaching);
         Assert.Equal(default, options.CacheTimeout);
-        
+
         options = options.UseCachingWithTimeout(TimeSpan.FromHours(1));
         Assert.True(options.EnableCaching);
         Assert.Equal(TimeSpan.FromHours(1), options.CacheTimeout);
@@ -64,7 +64,7 @@ public class BasicTests
     {
         IContentApiOptions options = new ContentApiOptions();
         Assert.Equal(default, options.EnableSmartCaching);
-        
+
         options = options.UseCachingWithSmartCaching();
         Assert.True(options.EnableSmartCaching);
     }

@@ -13,13 +13,13 @@ public interface IContentApiOptions : IFluentContentApiOptions
     UmbracoOptions UmbracoOptions { get; }
     CrudOptions CreationOptions { get; }
     CrudOptions EditingOptions { get; }
-    CrudOptions DeletionOptions { get; } 
+    CrudOptions DeletionOptions { get; }
 }
 public partial class ContentApiOptions : IContentApiOptions
 {
     public bool EnableCaching { get; set; }
     public TimeSpan? CacheTimeout { get; set; }
-    public bool EnableSmartCaching{ get; set; }
+    public bool EnableSmartCaching { get; set; }
 
     public bool HideLinks { get; set; }
     public string JwtPrivateKey { get; set; }
