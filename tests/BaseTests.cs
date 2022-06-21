@@ -2,6 +2,7 @@ using System.Text.Json;
 
 using Flaeng.Umbraco.ContentAPI.Converters;
 using Flaeng.Umbraco.ContentAPI.Models;
+using Flaeng.Umbraco.ContentAPI.Options;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +42,7 @@ public abstract class BaseTests
 
     protected void Initialize(IUmbracoApp app, Action<ContentApiOptions>? configureOptions = null)
     {
-        var optionsMock = new Mock<IOptions<ContentApiOptions>>();
+        var optionsMock = new Mock<IOptionsSnapshot<ContentApiOptions>>();
         var options = new ContentApiOptions();
         configureOptions?.Invoke(options);
         optionsMock.Setup(x => x.Value).Returns(options);

@@ -1,3 +1,5 @@
+using Flaeng.Umbraco.ContentAPI.Options;
+
 namespace Flaeng.Umbraco.ContentAPI.Tests;
 
 public class UmbracoOptionsTests

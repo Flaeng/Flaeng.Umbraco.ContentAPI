@@ -1,5 +1,7 @@
 using System;
 
+using Flaeng.Umbraco.ContentAPI.Options;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -7,10 +9,10 @@ namespace Flaeng.Umbraco.ContentAPI;
 
 public static class IServiceCollectionExtensions
 {
-    public static void AddContentAPI(this IServiceCollection services, Action<ContentApiOptions> configure = null)
+    public static void AddContentAPI(this IServiceCollection services, Action<IContentApiOptions> configure = null)
     {
         configure ??= x => { };
-        services.Configure<ContentApiOptions>(configure);
+        services.Configure<IContentApiOptions>(configure);
 
         services.AddScoped<IFilterHandler, DefaultFilterHandler>();
         services.AddScoped<ILinkPopulator, DefaultLinkPopulator>();

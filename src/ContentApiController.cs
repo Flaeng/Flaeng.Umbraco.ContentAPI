@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Flaeng.Umbraco.ContentAPI.Models;
+using Flaeng.Umbraco.ContentAPI.Options;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,7 +25,7 @@ public class ContentApiController : UmbracoApiController
     protected readonly UmbracoHelper umbracoHelper;
     protected readonly IUmbracoContext umbracoContext;
     protected readonly AppCaches cache;
-    protected readonly ContentApiOptions options;
+    protected readonly IContentApiOptions options;
     protected readonly IResponseBuilder responseBuilder;
     protected readonly IFilterHandler filterHelper;
     protected readonly ILinkPopulator linkPopulator;
@@ -36,7 +39,7 @@ public class ContentApiController : UmbracoApiController
             UmbracoHelper umbracoHelper,
             IUmbracoContextAccessor umbracoContextAccessor,
             AppCaches cache,
-            IOptions<ContentApiOptions> options,
+            IOptionsSnapshot<IContentApiOptions> options,
             IResponseBuilder responseBuilder,
             IFilterHandler filterHelper,
             ILinkPopulator linkPopulator
@@ -89,6 +92,11 @@ public class ContentApiController : UmbracoApiController
 
         if (pathSplit.Length == 1)
         {
+            if (tryHandleUmbracoRequest(rootContentTypeAlias, out var result))
+            {
+                return responseBuilder.Build(result);
+            }
+
             var rootContentType = umbracoContext.Content.GetContentType(rootContentTypeAlias);
             if (rootContentType == null)
                 throw new ContentTypeNotFoundException(rootContentTypeAlias);
@@ -128,6 +136,22 @@ public class ContentApiController : UmbracoApiController
 
             return responseBuilder.Build(content);
         }
+    }
+
+    private bool tryHandleUmbracoRequest(string contentAlias, out IEnumerable<IPublishedContent> result)
+    {
+        result = null;
+        return false;
+        // switch (contentAlias.ToLower())
+        // {
+        //     case "dictionary":
+        //         // umbracoHelper.CultureDictionary;
+        //         break;
+
+        //     default:
+        //         result = null;
+        //         return false;
+        // }
     }
 
     private IPublishedContent GetContentById(string contentId, string contentTypeAlias)

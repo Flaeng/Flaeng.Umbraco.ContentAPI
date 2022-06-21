@@ -1,6 +1,7 @@
 using System.Linq;
 
 using Flaeng.Umbraco.ContentAPI.Models;
+using Flaeng.Umbraco.ContentAPI.Options;
 using Flaeng.Umbraco.Extensions;
 
 using Microsoft.AspNetCore.Http;
@@ -23,13 +24,13 @@ public class DefaultLinkPopulator : ILinkPopulator
     protected readonly HttpContext httpContext;
     protected readonly IUmbracoContext umbracoContext;
     protected readonly IContentTypeService contentTypeService;
-    protected readonly ContentApiOptions options;
+    protected readonly IContentApiOptions options;
 
     public DefaultLinkPopulator(
         IHttpContextAccessor httpContextAccessor,
         IUmbracoContextAccessor umbracoContextAccessor,
         IContentTypeService contentTypeService,
-        IOptions<ContentApiOptions> options
+        IOptionsSnapshot<IContentApiOptions> options
     )
     {
         this.httpContext = httpContextAccessor.HttpContext;

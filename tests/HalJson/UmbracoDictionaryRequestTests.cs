@@ -15,12 +15,11 @@ public class UmbracoDictionaryRequestTests : BaseTests
     [Fact]
     public void Can_get_dictionary()
     {
-        
-    }
-    
-    [Fact]
-    public void Can_get_single_media()
-    {
+        // var result = Controller!.Get("dictionary");
+
+        // var response = AssertAndGetCollectionResponse(result);
+
+        // Assert.Equal(2, response!.TotalItemCount);
     }
     
 }
