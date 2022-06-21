@@ -65,11 +65,11 @@ public abstract class BaseTests
             .Setup(x => x.TryGetUmbracoContext(out outUmbracoContext));
 
         var filterHelper = new DefaultFilterHandler(httpContextAccessorMock.Object);
-        
+
         var linkPopulator = new DefaultLinkPopulator(
-            httpContextAccessor: httpContextAccessorMock.Object, 
-            umbracoContextAccessor: umbracoContextAccessorMock.Object, 
-            contentTypeService: app.ContentTypeService, 
+            httpContextAccessor: httpContextAccessorMock.Object,
+            umbracoContextAccessor: umbracoContextAccessorMock.Object,
+            contentTypeService: app.ContentTypeService,
             options: optionsMock.Object);
 
         var responseBuilder = new DefaultResponseBuilder(
