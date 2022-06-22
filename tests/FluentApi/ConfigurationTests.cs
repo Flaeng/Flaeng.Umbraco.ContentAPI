@@ -11,9 +11,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests;
 
 public class ConfigurationTests
 {
-    readonly IOptions<ContentApiOptions>? bindedOptions;
-    readonly IOptions<ContentApiOptions>? configuredOptions;
-    readonly IOptions<ContentApiOptions>? gottenOptions;
+    readonly IOptions<ContentApiOptions>? options;
     readonly string json = @"
         {
             ""ContentApiOptions"": {
@@ -31,74 +29,46 @@ public class ConfigurationTests
 
     public ConfigurationTests()
     {
-        {
-            var builder = WebApplication.CreateBuilder();
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            builder.Configuration.AddJsonStream(stream);
-            builder.Services.AddOptions<ContentApiOptions>(IContentApiOptions.ConfigurationName);
+        var builder = WebApplication.CreateBuilder();
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+        builder.Configuration.AddJsonStream(stream);
+        builder.Services.AddOptions<ContentApiOptions>(IContentApiOptions.ConfigurationName);
 
-            var section = builder.Configuration.GetSection(IContentApiOptions.ConfigurationName);
-            builder.Services.Configure<ContentApiOptions>(section);
+        var section = builder.Configuration.GetSection(IContentApiOptions.ConfigurationName);
+        builder.Services.Configure<ContentApiOptions>(section);
 
-            var app = builder.Build();
-            configuredOptions = app.Services.GetService<IOptions<ContentApiOptions>>();
-            var opt = configuredOptions?.Value;
-        }
-
-        {
-            var builder = WebApplication.CreateBuilder();
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            builder.Configuration.AddJsonStream(stream);
-            builder.Services.AddOptions<ContentApiOptions>(IContentApiOptions.ConfigurationName);
-
-            var options = new ContentApiOptions();
-            builder.Configuration
-                .GetSection(IContentApiOptions.ConfigurationName)
-                .Bind(options);
-
-            var app = builder.Build();
-            bindedOptions = app.Services.GetService<IOptions<ContentApiOptions>>();
-            var opt = bindedOptions?.Value;
-        }
-
-        {
-            var builder = WebApplication.CreateBuilder();
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            builder.Configuration.AddJsonStream(stream);
-            builder.Services.AddOptions<ContentApiOptions>(IContentApiOptions.ConfigurationName);
-
-            var options = builder.Configuration
-                .GetSection(IContentApiOptions.ConfigurationName)
-                .Get<ContentApiOptions>();
-
-            var app = builder.Build();
-            gottenOptions = app.Services.GetService<IOptions<ContentApiOptions>>();
-            var opt = bindedOptions?.Value;
-        }
+        var app = builder.Build();
+        options = app.Services.GetService<IOptions<ContentApiOptions>>();
     }
 
     [Fact]
-    public void Can_configure_options_from_config() => VerifyOptions(configuredOptions);
-
-    [Fact]
-    public void Can_bind_options_from_config() => VerifyOptions(bindedOptions);
-
-    [Fact]
-    public void Can_get_gotten_options_from_config() => VerifyOptions(gottenOptions);
-
-    private void VerifyOptions(IOptions<ContentApiOptions>? opts)
+    public void Can_do_simple_configuration_of_options()
     {
-        Assert.NotNull(opts);
-        Assert.NotNull(opts!.Value);
+        Assert.NotNull(options);
+        Assert.NotNull(options!.Value);
 
-        Assert.False(opts.Value.EnableCaching);
-        Assert.True(opts.Value.EnableSmartCaching);
+        Assert.False(options.Value.EnableCaching);
+        Assert.True(options.Value.EnableSmartCaching);
+    }
 
-        Assert.False(opts.Value.UmbracoOptions.ExposeMedia);
-        Assert.True(opts.Value.UmbracoOptions.ExposeUsers);
+    [Fact]
+    public void Can_configure_umbraco_options()
+    {
+        Assert.NotNull(options);
+        Assert.NotNull(options!.Value);
 
-        Assert.Contains(opts.Value.CreationOptions, x => x.ContentTypeAlias == "test");
-        Assert.DoesNotContain(opts.Value.EditingOptions, x => x.ContentTypeAlias == "test");
+        Assert.False(options.Value.UmbracoOptions.ExposeMedia);
+        Assert.True(options.Value.UmbracoOptions.ExposeUsers);
+    }
+
+    [Fact]
+    public void Can_configure_creation_options()
+    {
+        Assert.NotNull(options);
+        Assert.NotNull(options!.Value);
+
+        Assert.Contains(options.Value.CreationOptions, x => x.ContentTypeAlias == "test");
+        Assert.DoesNotContain(options.Value.EditingOptions, x => x.ContentTypeAlias == "test");
     }
 
 }
