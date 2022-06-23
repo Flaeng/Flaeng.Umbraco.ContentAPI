@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
 
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +38,7 @@ public class ContentApiController : UmbracoApiController
             UmbracoHelper umbracoHelper,
             IUmbracoContextAccessor umbracoContextAccessor,
             AppCaches cache,
-            IOptionsSnapshot<IContentApiOptions> options,
+            IOptionsSnapshot<ContentApiOptions> options,
             IResponseBuilder responseBuilder,
             IFilterHandler filterHelper,
             ILinkPopulator linkPopulator
@@ -94,7 +93,7 @@ public class ContentApiController : UmbracoApiController
         {
             if (tryHandleUmbracoRequest(rootContentTypeAlias, out var result))
             {
-                return responseBuilder.Build(result);
+                return responseBuilder.Build(rootContentTypeAlias, result);
             }
 
             var rootContentType = umbracoContext.Content.GetContentType(rootContentTypeAlias);
@@ -103,7 +102,7 @@ public class ContentApiController : UmbracoApiController
 
             var contentColl = umbracoContext.Content.GetByContentType(rootContentType);
             contentColl = filterHelper.ApplyFilter(contentColl);
-            return responseBuilder.Build(contentColl);
+            return responseBuilder.Build(rootContentTypeAlias, contentColl);
         }
 
         var isCollectionResponse = pathSplit.Length % 2 == 1;
@@ -125,7 +124,7 @@ public class ContentApiController : UmbracoApiController
 
             contentColl = filterHelper.ApplyFilter(contentColl);
 
-            return responseBuilder.Build(contentColl);
+            return responseBuilder.Build(null, contentColl);
         }
         else
         {

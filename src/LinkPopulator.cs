@@ -25,18 +25,21 @@ public class DefaultLinkPopulator : ILinkPopulator
     protected readonly IUmbracoContext umbracoContext;
     protected readonly IContentTypeService contentTypeService;
     protected readonly IContentApiOptions options;
+    protected readonly ILinkFormatter linkFormatter;
 
     public DefaultLinkPopulator(
         IHttpContextAccessor httpContextAccessor,
         IUmbracoContextAccessor umbracoContextAccessor,
         IContentTypeService contentTypeService,
-        IOptionsSnapshot<IContentApiOptions> options
+        IOptionsSnapshot<ContentApiOptions> options,
+        ILinkFormatter linkFormatter
     )
     {
         this.httpContext = httpContextAccessor.HttpContext;
         umbracoContextAccessor.TryGetUmbracoContext(out umbracoContext);
         this.contentTypeService = contentTypeService;
         this.options = options.Value;
+        this.linkFormatter = linkFormatter;
     }
 
     public LinksObject GetRoot()
@@ -48,25 +51,25 @@ public class DefaultLinkPopulator : ILinkPopulator
         AddSelfLink(resp);
 
         if (options.UmbracoOptions.ExposeMedia)
-            resp.Links.Add("media", new HalObject { Name = "Media", Href = "/media" });
+            resp.Links.Add("media", new HalObject { Name = "Media", Href = linkFormatter.FormatHref("media") });
 
         if (options.UmbracoOptions.ExposeMembers)
-            resp.Links.Add("members", new HalObject { Name = "Members", Href = "/members" });
+            resp.Links.Add("members", new HalObject { Name = "Members", Href = linkFormatter.FormatHref("members") });
 
         if (options.UmbracoOptions.ExposeMemberGroups)
-            resp.Links.Add("memberGroups", new HalObject { Name = "Member Groups", Href = "/memberGroups" });
+            resp.Links.Add("memberGroups", new HalObject { Name = "Member Groups", Href = linkFormatter.FormatHref("memberGroups") });
 
         if (options.UmbracoOptions.ExposeUsers)
-            resp.Links.Add("users", new HalObject { Name = "Users", Href = "/users" });
+            resp.Links.Add("users", new HalObject { Name = "Users", Href = linkFormatter.FormatHref("users") });
 
         if (options.UmbracoOptions.ExposeForms)
-            resp.Links.Add("forms", new HalObject { Name = "Forms", Href = "/forms" });
+            resp.Links.Add("forms", new HalObject { Name = "Forms", Href = linkFormatter.FormatHref("forms") });
 
         if (options.UmbracoOptions.ExposeTranslationDictionary)
-            resp.Links.Add("dictionary", new HalObject { Name = "Dictionary", Href = "/dictionary" });
+            resp.Links.Add("dictionary", new HalObject { Name = "Dictionary", Href = linkFormatter.FormatHref("dictionary") });
 
         foreach (var contentType in contentTypeService.GetAll())
-            resp.Links.Add(contentType.Alias, new HalObject { Name = contentType.Name, Href = contentType.Alias });
+            resp.Links.Add(contentType.Alias, new HalObject { Name = contentType.Name, Href = linkFormatter.FormatHref(contentType.Alias) });
 
         return resp;
     }

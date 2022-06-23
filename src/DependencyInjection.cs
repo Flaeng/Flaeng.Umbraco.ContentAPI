@@ -1,11 +1,10 @@
 using System;
 
+using Flaeng.Umbraco.ContentAPI;
 using Flaeng.Umbraco.ContentAPI.Options;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-
-namespace Flaeng.Umbraco.ContentAPI;
 
 public static class IServiceCollectionExtensions
 {
@@ -15,6 +14,7 @@ public static class IServiceCollectionExtensions
         services.Configure<IContentApiOptions>(configure);
 
         services.AddScoped<IFilterHandler, DefaultFilterHandler>();
+        services.AddScoped<ILinkFormatter, DefaultLinkFormatter>();
         services.AddScoped<ILinkPopulator, DefaultLinkPopulator>();
         services.AddScoped<IResponseBuilder, DefaultResponseBuilder>();
     }

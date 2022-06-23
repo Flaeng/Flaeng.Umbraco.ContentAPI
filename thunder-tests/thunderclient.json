@@ -1,0 +1,53 @@
+[
+  {
+    "_id": "1be5ff4d-46d2-463d-b0fb-930993e0a399",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can call root",
+    "url": "{{baseurl}}",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2022-06-22T18:37:14.555Z",
+    "modified": "2022-06-22T18:45:10.962Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      },
+      {
+        "type": "Content-Type",
+        "custom": "",
+        "action": "contains",
+        "value": "application/json"
+      },
+      {
+        "type": "res-time",
+        "custom": "",
+        "action": "<=",
+        "value": "200"
+      },
+      {
+        "type": "json-query",
+        "custom": "json._links.self.href",
+        "action": "equal",
+        "value": "/api/contentapi"
+      },
+      {
+        "type": "json-query",
+        "custom": "json._links.profile.name",
+        "action": "equal",
+        "value": "Profile"
+      },
+      {
+        "type": "json-query",
+        "custom": "json._links.profile.href",
+        "action": "equal",
+        "value": "/api/contentapi/profile"
+      }
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "eab94238-f5e9-4390-b857-34a8598a2399",
+    "name": "Local env",
+    "default": true,
+    "sortNum": 10000,
+    "created": "2022-06-22T18:38:37.505Z",
+    "modified": "2022-06-22T18:40:19.326Z",
+    "data": [
+      {
+        "name": "baseurl",
+        "value": "https://localhost:44389/api/contentapi"
+      }
+    ]
+  }
+]

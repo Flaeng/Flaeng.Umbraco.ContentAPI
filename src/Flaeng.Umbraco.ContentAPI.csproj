@@ -5,7 +5,7 @@
     <Product>Flaeng.Umbraco.ContentAPI</Product>
     <PackageId>Flaeng.Umbraco.ContentAPI</PackageId>
     <Title>Flaeng.Umbraco.ContentAPI</Title>
-    <Description>...</Description>
+    <Description>HAL+JSON API endpoints for all your content</Description>
     <PackageTags>umbraco plugin package</PackageTags>
   </PropertyGroup>
 
