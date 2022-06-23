@@ -1,0 +1,35 @@
+name: publish to nuget
+on:
+  workflow_run:
+    workflows: [Build and test]
+    types: 
+    - completed
+
+jobs:
+  publish:
+    name: build, pack & publish
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Restore
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+    
+    - name: Pack
+      run: dotnet pack -v normal -c Release --include-symbols --include-source -p:PackageVersion=0.0.1 -o nupkg src/Flaeng.Umbraco.ContentAPI.csproj
+    
+#    - name: Publish
+#      run: dotnet nuget push nupkg/Flaeng.Umbraco.ContentAPI.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_TOKEN}
+#      env:
+#        NUGET_TOKEN: ${{ secrets.NUGET_TOKEN }}
+
+#https://docs.microsoft.com/en-us/nuget/reference/nuspec
+#https://acraven.medium.com/a-nuget-package-workflow-using-github-actions-7da8c6557863
