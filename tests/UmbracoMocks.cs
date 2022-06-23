@@ -25,6 +25,7 @@ public interface IUmbracoBuilder
 {
     int AddContentType(
         string alias,
+        string name,
         int[]? childrenContentTypeId = null,
         Action<Mock<IPublishedContentType>>? configure = null
         );
@@ -138,6 +139,7 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
     int contentTypeIdCounter = 1;
     public int AddContentType(
         string alias,
+        string name,
         int[]? childrenContentTypeId = null,
         Action<Mock<IPublishedContentType>>? configure = null
         )
@@ -163,9 +165,24 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
             contentTypeServiceMock
                 .Setup(x => x.GetChildren(contentTypeIdCounter))
                 .Returns(getChildren);
+
+            contentTypeServiceMock
+                .Setup(x => x.GetAll())
+                .Returns(contentTypeList.Values.Select(ConvertPublishedContentTypeToContentType(name)).ToList());
         }
 
         return contentTypeIdCounter++;
+    }
+
+    private Func<IPublishedContentType, IContentType> ConvertPublishedContentTypeToContentType(string name)
+    {
+        return contentType =>
+        {
+            var result = new Mock<IContentType>();
+            result.Setup(x => x.Alias).Returns(contentType.Alias);
+            result.Setup(x => x.Name).Returns(name);
+            return result.Object;
+        };
     }
 
     int contentIdCounter = 1;
@@ -201,9 +218,13 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 
         List<UmbracoProperty> propertyList = new();
 
-        propertyList.Add(new UmbracoProperty("Id", contentIdCounter));
-        propertyList.Add(new UmbracoProperty("Name", name));
-        propertyList.Add(new UmbracoProperty("Level", level));
+        var idPropertyType = new Mock<IPublishedPropertyType>();
+        var namePropertyType = new Mock<IPublishedPropertyType>();
+        var levelPropertyType = new Mock<IPublishedPropertyType>();
+
+        propertyList.Add(new UmbracoProperty(idPropertyType.Object, "Id", contentIdCounter));
+        propertyList.Add(new UmbracoProperty(namePropertyType.Object, "Name", name));
+        propertyList.Add(new UmbracoProperty(levelPropertyType.Object, "Level", level));
 
         if (properties != null)
             propertyList.AddRange(properties);
@@ -213,6 +234,10 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         content
             .Setup(x => x.GetProperty(It.IsAny<string>()))
             .Returns<string>(p1 => propertiesLookup.TryGetValue(p1, out var result) ? result : null);
+
+        content
+            .Setup(x => x.Properties)
+            .Returns(propertiesLookup.Values);
 
         if (!contentByContentTypeList.TryGetValue(contentTypeAlias.ToLower(), out var contentList))
             contentByContentTypeList.Add(contentTypeAlias.ToLower(), contentList = new List<IPublishedContent>());
@@ -282,19 +307,20 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 
     public class UmbracoProperty : IPublishedProperty
     {
-        public IPublishedPropertyType PropertyType => throw new NotImplementedException();
+        public IPublishedPropertyType PropertyType { get; init; }
         public string Alias { get; init; }
 
         readonly Dictionary<string, object?> values = new Dictionary<string, object?>();
 
-        public UmbracoProperty(string alias)
+        public UmbracoProperty(IPublishedPropertyType propertyType, string alias)
         {
             this.Alias = alias;
+            this.PropertyType = propertyType;
         }
 
-        public UmbracoProperty(string alias, object? value)
+        public UmbracoProperty(IPublishedPropertyType propertyType, string alias, object? value)
+            :this(propertyType, alias)
         {
-            this.Alias = alias;
             values.Add(String.Empty, value);
         }
 

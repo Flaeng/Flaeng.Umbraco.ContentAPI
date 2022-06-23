@@ -13,7 +13,7 @@ namespace Flaeng.Umbraco.ContentAPI;
 public interface IResponseBuilder
 {
     ObjectResponse Build(IPublishedContent content);
-    CollectionResponse Build(IEnumerable<IPublishedContent> contentColl);
+    CollectionResponse Build(string contentType, IEnumerable<IPublishedContent> contentColl);
 }
 public class DefaultResponseBuilder : IResponseBuilder
 {
@@ -41,7 +41,7 @@ public class DefaultResponseBuilder : IResponseBuilder
     {
         linkPopulator.Populate(result);
 
-        if (!httpContext.Request.Query.TryGetValue("$expand", out var expand))
+        if (!httpContext.Request.Query.TryGetValue("expand", out var expand))
             expand = "";
 
         var expandSplit = expand.ToString().Split(',').SelectMany(x =>
@@ -75,14 +75,14 @@ public class DefaultResponseBuilder : IResponseBuilder
         }
     }
 
-    public CollectionResponse Build(IEnumerable<IPublishedContent> contentColl)
+    public CollectionResponse Build(string contentType, IEnumerable<IPublishedContent> contentColl)
     {
-        var pageNumber = int.Parse(GetFromQuery("$pageNumber", "1"));
-        var pageSize = int.Parse(GetFromQuery("$pageSize", "20"));
-        if (Request.Query.TryGetValue("$orderBy", out var orderBy))
+        var pageNumber = int.Parse(GetFromQuery("pageNumber", "1"));
+        var pageSize = int.Parse(GetFromQuery("pageSize", "20"));
+        if (Request.Query.TryGetValue("orderBy", out var orderBy))
             contentColl = contentColl.OrderBy(x => x.GetProperty(orderBy));
 
-        var result = new CollectionResponse(contentColl, pageNumber, pageSize);
+        var result = new CollectionResponse(contentType, contentColl, pageNumber, pageSize);
         linkPopulator.Populate(result);
         foreach (var item in result.Items)
             expandObject(item);

@@ -7,7 +7,7 @@ public class ObjectRequestTests : BaseTests
     public ObjectRequestTests()
     {
         var builder = UmbracoBuilder.Create();
-        builder.AddContentType("contentPage");
+        builder.AddContentType("contentPage", "Content Page");
         var frontpageId = builder.AddContent("contentPage", "Frontpage");
         builder.AddContent("contentPage", "Underside #1", parentId: frontpageId);
         subpage2Id = builder.AddContent("contentPage", "Underside #2", parentId: frontpageId);

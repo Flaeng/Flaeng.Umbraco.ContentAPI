@@ -49,5 +49,110 @@
         "value": "/api/contentapi/profile"
       }
     ]
+  },
+  {
+    "_id": "90afe97d-a838-479f-b60d-83a58c5db222",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get profiles",
+    "url": "{{baseurl}}/profile",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2022-06-22T19:07:04.454Z",
+    "modified": "2022-06-22T19:21:34.805Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      },
+      {
+        "type": "Content-Type",
+        "custom": "",
+        "action": "contains",
+        "value": "application/json"
+      },
+      {
+        "type": "res-time",
+        "custom": "",
+        "action": "<=",
+        "value": "200"
+      },
+      {
+        "type": "json-query",
+        "custom": "json._links.self.href",
+        "action": "equal",
+        "value": "/api/contentapi/profile"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageSize",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageNumber",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalPageCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalItemCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].id",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].name",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self.href",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.parent.href",
+        "action": "equal",
+        "value": "/api/contentapi/profiles/1062"
+      }
+    ]
   }
 ]

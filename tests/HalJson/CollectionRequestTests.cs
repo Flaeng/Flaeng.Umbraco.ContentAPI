@@ -11,7 +11,7 @@ public class CollectionRequestTests : BaseTests
     public CollectionRequestTests()
     {
         var builder = UmbracoBuilder.Create();
-        builder.AddContentType("contentPage");
+        builder.AddContentType("contentPage", "Content Page");
         var frontpageId = builder.AddContent("contentPage", "Frontpage");
         for (int i = 0; i < 110; i++)
             builder.AddContent("contentPage", $"Subpage #{i}", parentId: frontpageId);
@@ -81,7 +81,7 @@ public class CollectionRequestTests : BaseTests
     [Fact]
     public void collection_request_handles_nondefault_page_size()
     {
-        QueryString = "$pageSize=2";
+        QueryString = "pageSize=2";
         var result = Controller!.Get("contentPage");
 
         var response = AssertAndGetCollectionResponse(result);
@@ -93,7 +93,7 @@ public class CollectionRequestTests : BaseTests
     [Fact]
     public void collection_response_has_link_to_first_page()
     {
-        QueryString = "$pageNumber=5";
+        QueryString = "pageNumber=5";
         var result = Controller!.Get("contentPage");
 
         var response = AssertAndGetCollectionResponse(result);
@@ -106,7 +106,7 @@ public class CollectionRequestTests : BaseTests
     [Fact]
     public void collection_response_has_link_to_previous_page()
     {
-        QueryString = "$pageNumber=5";
+        QueryString = "pageNumber=5";
         var result = Controller!.Get("contentPage");
 
         var response = AssertAndGetCollectionResponse(result);
@@ -119,7 +119,7 @@ public class CollectionRequestTests : BaseTests
     [Fact]
     public void collection_response_has_link_to_next_page()
     {
-        QueryString = "$pageNumber=5";
+        QueryString = "pageNumber=5";
         var result = Controller!.Get("contentPage");
 
         var response = AssertAndGetCollectionResponse(result);
@@ -132,7 +132,7 @@ public class CollectionRequestTests : BaseTests
     [Fact]
     public void collection_response_has_link_to_last_page()
     {
-        QueryString = "$pageNumber=5";
+        QueryString = "pageNumber=5";
         var result = Controller!.Get("contentPage");
 
         var response = AssertAndGetCollectionResponse(result);

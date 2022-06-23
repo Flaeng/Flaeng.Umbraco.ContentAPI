@@ -26,7 +26,7 @@ public class DefaultFilterHandler : IFilterHandler
 
     public IEnumerable<IPublishedContent> ApplyFilter(IEnumerable<IPublishedContent> collection)
     {
-        if (Query.TryGetValue("$filter", out var filter))
+        if (Query.TryGetValue("filter", out var filter))
         {
             var filterSplit = filter.ToString().Split(',');
             foreach (var filterItem in filterSplit)

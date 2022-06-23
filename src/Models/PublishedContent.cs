@@ -28,7 +28,7 @@ public class PublishedContent : IPublishedContent
     public IPublishedContentType ContentType => Content.ContentType;
     public Guid Key => Content.Key;
     public Dictionary<string, object> PropertyValues { get; } = new();
-    public List<IPublishedProperty> Properties { get; }
+    public List<IPublishedProperty> Properties { get; init; }
     IEnumerable<IPublishedProperty> IPublishedElement.Properties => this.Properties;
     public IPublishedProperty GetProperty(string alias) => Content.GetProperty(alias);
     public bool IsDraft(string culture = null) => Content.IsDraft(culture);

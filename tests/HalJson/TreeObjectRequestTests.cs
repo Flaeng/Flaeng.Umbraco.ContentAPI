@@ -7,12 +7,12 @@ public class TreeObjectRequestTests : BaseTests
     public TreeObjectRequestTests()
     {
         var builder = UmbracoBuilder.Create();
-        builder.AddContentType("contentPage");
+        builder.AddContentType("contentPage", "Content Page");
         frontpageId = builder.AddContent("contentPage", "Frontpage");
         builder.AddContent("contentPage", "Underside #1", parentId: frontpageId);
         builder.AddContent("contentPage", "Underside #2", parentId: frontpageId);
 
-        builder.AddContentType("settings");
+        builder.AddContentType("settings", "Settings");
         for (int i = 0; i < 26; i++)
             builder.AddContent("settings", $"Setting #{i}", parentId: frontpageId);
 
@@ -42,7 +42,7 @@ public class TreeObjectRequestTests : BaseTests
     [Fact]
     public void tree_request_returns_page_size()
     {
-        QueryString = "$pageSize=1";
+        QueryString = "pageSize=1";
         var result = Controller!.Get($"contentPage/{frontpageId}/contentPage");
 
         var response = AssertAndGetCollectionResponse(result);

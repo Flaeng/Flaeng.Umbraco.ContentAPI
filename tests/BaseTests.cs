@@ -34,8 +34,8 @@ public abstract class BaseTests
     private QueryCollection Query = new();
     protected string QueryString
     {
-        get { return Query.Count == 0 ? String.Empty : String.Join("&", Query.Select(x => $"{x.Key}={x.Value}")); }
-        set { Query = new QueryCollection(value.Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => new StringValues(x.Skip(1).FirstOrDefault()))); }
+        get { return Query.Count == 0 ? String.Empty : "?" + String.Join("&", Query.Select(x => $"{x.Key}={x.Value}")); }
+        set { Query = value.TrimStart('?').Length == 0 ? new QueryCollection() : new QueryCollection(value.TrimStart('?').Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => new StringValues(x.Skip(1).FirstOrDefault()))); }
     }
 
     protected string Path { get; set; } = "";
@@ -56,7 +56,9 @@ public abstract class BaseTests
         }));
         httpRequestMock.Setup(x => x.Path).Returns(() => $"/" + Path.TrimStart('/'));
         httpRequestMock.Setup(x => x.Query).Returns(() => Query);
-        httpRequestMock.Setup(x => x.QueryString).Returns(new QueryString());
+        httpRequestMock.Setup(x => x.QueryString).Returns(() => {
+            return new QueryString(QueryString);
+        });
         httpContextMock.Setup(x => x.Request).Returns(httpRequestMock.Object);
 
         var umbracoContextAccessorMock = new Mock<IUmbracoContextAccessor>();
@@ -66,11 +68,14 @@ public abstract class BaseTests
 
         var filterHelper = new DefaultFilterHandler(httpContextAccessorMock.Object);
 
+        var linkFormatter = new DefaultLinkFormatter();
+
         var linkPopulator = new DefaultLinkPopulator(
             httpContextAccessor: httpContextAccessorMock.Object,
             umbracoContextAccessor: umbracoContextAccessorMock.Object,
             contentTypeService: app.ContentTypeService,
-            options: optionsMock.Object);
+            options: optionsMock.Object,
+            linkFormatter: linkFormatter);
 
         var responseBuilder = new DefaultResponseBuilder(
             httpContextAccessor: httpContextAccessorMock.Object,

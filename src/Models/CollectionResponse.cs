@@ -27,8 +27,11 @@ public class CollectionResponse : ILinksContainer
 
     public IEnumerable<ObjectResponse> Items { get; init; }
 
-    public CollectionResponse(IEnumerable<IPublishedContent> items, int pageNumber, int pageSize)
+    public string ItemContentType { get; init; }
+
+    public CollectionResponse(string itemContentType, IEnumerable<IPublishedContent> items, int pageNumber, int pageSize)
     {
+        this.ItemContentType = itemContentType;
         this.TotalItemCount = items.Count();
         this.PageNumber = pageNumber;
         this.PageSize = pageSize;
