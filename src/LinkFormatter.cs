@@ -8,6 +8,6 @@ public interface ILinkFormatter
 }
 public class DefaultLinkFormatter : ILinkFormatter
 {
-    public string FormatHref(string localPath) 
+    public string FormatHref(string localPath)
         => String.IsNullOrWhiteSpace(localPath) ? "/api/contentapi" : $"/api/contentapi/{localPath}";
 }

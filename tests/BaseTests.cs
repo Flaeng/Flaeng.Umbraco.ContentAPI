@@ -56,7 +56,8 @@ public abstract class BaseTests
         }));
         httpRequestMock.Setup(x => x.Path).Returns(() => $"/" + Path.TrimStart('/'));
         httpRequestMock.Setup(x => x.Query).Returns(() => Query);
-        httpRequestMock.Setup(x => x.QueryString).Returns(() => {
+        httpRequestMock.Setup(x => x.QueryString).Returns(() =>
+        {
             return new QueryString(QueryString);
         });
         httpContextMock.Setup(x => x.Request).Returns(httpRequestMock.Object);

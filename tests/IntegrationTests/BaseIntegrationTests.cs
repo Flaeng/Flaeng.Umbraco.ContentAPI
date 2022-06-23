@@ -34,14 +34,14 @@ public abstract class BaseIntegrationTests : BaseTests
         builder.AddContent("scrumteam", "Team Alpha", firstCustomerId);
         builder.AddContent("scrumteam", "Team Beta", secondCustomerId);
         builder.AddContent("scrumteam", "Team Charlie", thirdCustomerId);
-        int deltaId = builder.AddContent("scrumteam", "Team Delta", firstCustomerId, new List<UmbracoBuilder.UmbracoProperty> 
-        { 
-            new UmbracoBuilder.UmbracoProperty(new Mock<IPublishedPropertyType>().Object, "startedAt", new DateTime(2020, 1, 13)) 
+        int deltaId = builder.AddContent("scrumteam", "Team Delta", firstCustomerId, new List<UmbracoBuilder.UmbracoProperty>
+        {
+            new UmbracoBuilder.UmbracoProperty(new Mock<IPublishedPropertyType>().Object, "startedAt", new DateTime(2020, 1, 13))
         });
         builder.AddContent("scrumteam", "Team Echo", thirdCustomerId);
 
         for (int i = 0; i < 95; i++)
-            builder.AddContent("employee", $"Employee #{i}", deltaId);        
+            builder.AddContent("employee", $"Employee #{i}", deltaId);
 
         Initialize(builder.Build());
 

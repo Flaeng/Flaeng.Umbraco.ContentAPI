@@ -6,7 +6,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests;
 
 public class LinksPropertyTests : BaseTests
 {
-    int frontpageId;
+    readonly int frontpageId;
 
     public LinksPropertyTests()
     {

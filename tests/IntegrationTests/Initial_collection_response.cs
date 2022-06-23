@@ -2,7 +2,7 @@ namespace Flaeng.Umbraco.ContentAPI.Tests.IntegrationTests;
 
 public class Initial_collection_response : BaseIntegrationTests
 {
-    
+
     [Fact]
     public void Has_self_link()
     {

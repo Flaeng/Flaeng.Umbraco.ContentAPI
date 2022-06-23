@@ -23,11 +23,11 @@ public class CollectionResponseConverter : JsonConverter<CollectionResponse>
             {
                 switch (prop.Name)
                 {
-                    case "Links": 
-                        writer.WritePropertyName("_links"); 
+                    case "Links":
+                        writer.WritePropertyName("_links");
                         break;
-                    case "Embedded": 
-                        writer.WritePropertyName("_embedded"); 
+                    case "Embedded":
+                        writer.WritePropertyName("_embedded");
                         break;
                     default:
                         writer.WritePropertyName($"{Char.ToLower(prop.Name[0])}{prop.Name.Substring(1)}");
