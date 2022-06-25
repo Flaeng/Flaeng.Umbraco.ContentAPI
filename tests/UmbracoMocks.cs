@@ -319,7 +319,7 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         }
 
         public UmbracoProperty(IPublishedPropertyType propertyType, string alias, object? value)
-            :this(propertyType, alias)
+            : this(propertyType, alias)
         {
             values.Add(String.Empty, value);
         }
