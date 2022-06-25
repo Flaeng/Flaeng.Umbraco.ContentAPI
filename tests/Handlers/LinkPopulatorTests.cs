@@ -7,16 +7,16 @@ public class LinkPopulator
         [Fact]
         public void on_objects()
         {
-            
+
         }
         [Fact]
         public void on_collections()
         {
-            
+
         }
     }
     public class can_handle_embedded_resources
     {
-        
+
     }
 }

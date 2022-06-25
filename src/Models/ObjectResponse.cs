@@ -15,7 +15,7 @@ public class ObjectResponse : PublishedContent, ILinksContainer
 
     [JsonPropertyName("_embedded")]
     public Dictionary<string, CollectionResponse> Embedded { get; set; }
-    
+
     public ObjectResponse(IPublishedContent content, string culture)
         : base(content, culture)
     {

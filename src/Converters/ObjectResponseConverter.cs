@@ -101,12 +101,12 @@ public class ObjectResponseConverter : JsonConverter<ObjectResponse>
             default:
                 // writer.WriteString(property.Alias, $"2Type: ({propertyValue.GetType()})");
                 writer.WriteString(property.Alias, "TODO:" + propertyValue?.ToString());
-                
+
                 // JsonSerializer.Serialize(writer, propertyValue, options);
                 break;
 
-            // default:
-            //     break;
+                // default:
+                //     break;
         }
     }
 

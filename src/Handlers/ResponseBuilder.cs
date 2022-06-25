@@ -50,7 +50,7 @@ public class DefaultResponseBuilder : IResponseBuilder
         var contentColl = request.Value;
 
         int pageNumber, pageSize;
-        
+
         if (int.TryParse(Request.Query.GetValue("pageNumber", "1"), out pageNumber) == false)
             throw new InvalidQueryParameterException("pageNumber");
 

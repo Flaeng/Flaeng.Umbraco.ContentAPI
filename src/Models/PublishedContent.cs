@@ -28,7 +28,8 @@ public class PublishedContent : PublishedElement, IPublishedContent
     public IPublishedContent Parent => Content.Parent;
     public IEnumerable<IPublishedContent> Children => Content.Children;
     [JsonIgnore] public IEnumerable<IPublishedContent> ChildrenForAllCultures => Content.ChildrenForAllCultures;
-    [JsonIgnore] public IEnumerable<IEnumerable<ObjectResponse>> PropertiesWithIPublishedContentValue => Properties
+    [JsonIgnore]
+    public IEnumerable<IEnumerable<ObjectResponse>> PropertiesWithIPublishedContentValue => Properties
         .Where(x => x.HasValueOfIEnumerableOfIPublishedElement())
         .Select(x => PropertyValues.TryGetValue(x.Alias, out var value) ? value as IEnumerable<ObjectResponse> : null)
         .Where(x => x != null);

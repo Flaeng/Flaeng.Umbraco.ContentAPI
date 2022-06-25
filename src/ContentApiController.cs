@@ -83,8 +83,9 @@ public class ContentApiController : UmbracoApiController
     {
         var result = requestInterpreter.Interprete(path);
 
-        switch (result) {
-            case RootInterpreterResult rir: 
+        switch (result)
+        {
+            case RootInterpreterResult rir:
                 return responseBuilder.BuildRoot(rir);
 
             case Handlers.ObjectInterpreterResult oir:

@@ -78,7 +78,7 @@ public class DefaultLinkPopulator : ILinkPopulator
             container.Links.Add("self", new HalObject { Href = linkFormatter.FormatHref($"{or.ContentType.Alias}/{or.Id}") });
         else if (container is CollectionResponse cr)
             container.Links.Add("self", new HalObject { Href = linkFormatter.FormatHref($"{cr.ItemContentType}") });
-        else 
+        else
             container.Links.Add("self", new HalObject { Href = linkFormatter.FormatHref(String.Empty) });
 
         container.Links["self"].Href += httpContext.Request.QueryString;

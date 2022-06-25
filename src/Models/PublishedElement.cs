@@ -22,7 +22,7 @@ public class PublishedElement : IPublishedElement
     {
         this.element = element;
         this.Properties = element.Properties.ToList();
-        
+
         foreach (var property in this.Properties.Where(x => x.HasValueOfIEnumerableOfIPublishedElement()))
         {
             var contentColl = property.GetValue(culture) as IEnumerable<IPublishedContent>;

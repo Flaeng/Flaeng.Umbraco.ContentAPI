@@ -67,7 +67,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
                 _ => throw new UnknownOperatorException(opr),
             };
         }
-        
+
         var propertyValueString = propertyValue?.ToString() ?? "";
         return opr switch
         {
@@ -84,7 +84,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
         var publishedProperty = content.GetProperty(propertyAlias);
         if (publishedProperty is not null)
             return publishedProperty.GetValue(Culture);
-    
+
         var classProperty = typeof(IPublishedContent).GetProperties()
             .SingleOrDefault(x => x.Name.Equals(propertyAlias, StringComparison.InvariantCultureIgnoreCase));
         if (classProperty is not null)

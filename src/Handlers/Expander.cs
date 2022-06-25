@@ -50,7 +50,7 @@ public class DefaultExpander : IExpander
     {
         if (String.IsNullOrWhiteSpace(expand))
             return new string[0];
-        
+
         return expand.Split(',').SelectMany(x =>
         {
             var splitted = x.Split('.');
@@ -80,7 +80,7 @@ public class DefaultExpander : IExpander
                 .Select(x => x.Substring(x.IndexOf('.') + 1))
                 .Where(x => !String.IsNullOrWhiteSpace(x))
                 .ToArray();
-            
+
             foreach (var item in list)
                 Expand(item, childExpand);
         }

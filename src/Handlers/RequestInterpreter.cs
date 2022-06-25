@@ -19,13 +19,13 @@ namespace Flaeng.Umbraco.ContentAPI.Handlers;
 public interface IInterpreterResult { }
 public interface IInterpreterResult<T> : IInterpreterResult { T Value { get; } }
 public record RootInterpreterResult() : IInterpreterResult;
-public record UmbracoInterpreterResult(IDictionary<string, object> Value) 
+public record UmbracoInterpreterResult(IDictionary<string, object> Value)
     : IInterpreterResult<IDictionary<string, object>>;
 
-public record ObjectInterpreterResult(string ContentTypeAlias, IPublishedContent Value) 
+public record ObjectInterpreterResult(string ContentTypeAlias, IPublishedContent Value)
     : IInterpreterResult<IPublishedContent>;
 
-public record CollectionInterpreterResult(string ContentTypeAlias, IEnumerable<IPublishedContent> Value) 
+public record CollectionInterpreterResult(string ContentTypeAlias, IEnumerable<IPublishedContent> Value)
     : IInterpreterResult<IEnumerable<IPublishedContent>>;
 public interface IRequestInterpreter
 {
@@ -153,8 +153,8 @@ public class DefaultRequestInterpreter : IRequestInterpreter
         switch (request[0].ToLower())
         {
             case "media":
-                return opts.ExposeMedia == false 
-                    ? false 
+                return opts.ExposeMedia == false
+                    ? false
                     : TryGetUmbracoItem(umbracoContext.Media, request, out result);
 
             case "members":
