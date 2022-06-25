@@ -59,18 +59,22 @@ public abstract class BaseIntegrationTests : BaseTests
         Initialize(builder.Build());
 
         var result = Controller!.Get(String.Empty);
-        rootRequestResponse = JToken.Parse(JsonSerializer.Serialize(result.Value, SerializerOptions));
+        var objResult = result.Result as OkObjectResult;
+        rootRequestResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
 
         result = Controller!.Get($"employee");
-        initialCollectionResponse = JToken.Parse(JsonSerializer.Serialize(result.Value, SerializerOptions));
+        objResult = result.Result as OkObjectResult;
+        initialCollectionResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
 
         QueryString = "?pageNumber=2";
         result = Controller!.Get($"employee");
-        subsequentCollectionResponse = JToken.Parse(JsonSerializer.Serialize(result.Value, SerializerOptions));
+        objResult = result.Result as OkObjectResult;
+        subsequentCollectionResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
 
         QueryString = String.Empty;
         result = Controller!.Get($"scrumteam/8");
-        objectResponse = JToken.Parse(JsonSerializer.Serialize(result.Value, SerializerOptions));
+        objResult = result.Result as OkObjectResult;
+        objectResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
     }
 
     protected ContentApiController? Controller { get; private set; }
@@ -115,13 +119,14 @@ public abstract class BaseIntegrationTests : BaseTests
         var umbracoContextAccessorMock = new Mock<IUmbracoContextAccessor>();
         var outUmbracoContext = app.UmbracoContext;
         umbracoContextAccessorMock
-            .Setup(x => x.TryGetUmbracoContext(out outUmbracoContext));
+            .Setup(x => x.TryGetUmbracoContext(out outUmbracoContext))
+            .Returns(() => true);
 
         var linkFormatter = new DefaultLinkFormatter(
             optionsMock.Object, 
             httpContextAccessorMock.Object);
 
-        var filterHelper = new DefaultFilterInterpreter(httpContextAccessorMock.Object);
+        var filterInterpreter = new DefaultFilterInterpreter(httpContextAccessorMock.Object);
 
         var expander = new DefaultExpander(
             new Mock<ILogger<DefaultExpander>>().Object,
@@ -146,7 +151,8 @@ public abstract class BaseIntegrationTests : BaseTests
             new Mock<ILogger<DefaultRequestInterpreter>>().Object,
             optionsMock.Object,
             umbracoContextAccessorMock.Object,
-            app.UmbracoHelper
+            app.UmbracoHelper,
+            filterInterpreter
         );
 
         var logger = new Mock<ILogger<ContentApiController>>();

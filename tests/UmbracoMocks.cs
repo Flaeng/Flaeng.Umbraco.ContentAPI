@@ -2,11 +2,14 @@ using System;
 
 using Moq;
 
+using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Cache;
+using Umbraco.Cms.Core.Dictionary;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.PublishedCache;
 using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Core.Templates;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Cms.Web.Common;
 
@@ -87,8 +90,7 @@ public interface IUmbracoBuilder
 }
 public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 {
-    private readonly Mock<UmbracoHelper> umbracoHelper = new Mock<UmbracoHelper>();
-    public UmbracoHelper UmbracoHelper => umbracoHelper.Object;
+    public UmbracoHelper UmbracoHelper { get; init; }
 
     private readonly Mock<IUmbracoContext> umbracoContext = new Mock<IUmbracoContext>();
     public IUmbracoContext UmbracoContext => umbracoContext.Object;
@@ -115,10 +117,32 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
     readonly Dictionary<string, IList<IPublishedContent>> contentByContentTypeList = new();
     readonly Dictionary<int, IPublishedContent> contentById = new();
     readonly Dictionary<int, IList<IPublishedContent>> contentByParentId = new();
-    readonly Dictionary<string, string> CultureDictionary = new();
+    readonly Dictionary<string, object> CultureDictionary = new();
 
     private UmbracoBuilder()
     {
+        var cultureDictionaryFactory = new Mock<ICultureDictionaryFactory>();
+        var cultureDictionary = new Mock<ICultureDictionary>();
+        cultureDictionary
+            .Setup(x => x.GetChildren(It.IsAny<string>()))
+            .Returns<string>(key => (Dictionary<string, string>)CultureDictionary[key]);
+        cultureDictionaryFactory
+            .Setup(x => x.CreateDictionary())
+            .Returns(() => cultureDictionary.Object);
+
+        var componentRenderer = new Mock<IUmbracoComponentRenderer>();
+        var contentQuery = new Mock<IPublishedContentQuery>();
+
+        contentQuery
+            .Setup(x => x.Content(It.IsAny<int>()))
+            .Returns<int>(i => contentById.TryGetValue(i, out var value) ? value : default);
+
+        UmbracoHelper = new UmbracoHelper(
+            cultureDictionaryFactory.Object,
+            componentRenderer.Object,
+            contentQuery.Object
+            );
+
         umbracoContext.Setup(x => x.Content).Returns(contentCache.Object);
 
         runtimeCache
@@ -218,13 +242,13 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 
         List<UmbracoProperty> propertyList = new();
 
-        var idPropertyType = new Mock<IPublishedPropertyType>();
-        var namePropertyType = new Mock<IPublishedPropertyType>();
-        var levelPropertyType = new Mock<IPublishedPropertyType>();
+        // var idPropertyType = new Mock<IPublishedPropertyType>();
+        // var namePropertyType = new Mock<IPublishedPropertyType>();
+        // var levelPropertyType = new Mock<IPublishedPropertyType>();
 
-        propertyList.Add(new UmbracoProperty(idPropertyType.Object, "Id", contentIdCounter));
-        propertyList.Add(new UmbracoProperty(namePropertyType.Object, "Name", name));
-        propertyList.Add(new UmbracoProperty(levelPropertyType.Object, "Level", level));
+        // propertyList.Add(new UmbracoProperty(idPropertyType.Object, "Id", contentIdCounter));
+        // propertyList.Add(new UmbracoProperty(namePropertyType.Object, "Name", name));
+        // propertyList.Add(new UmbracoProperty(levelPropertyType.Object, "Level", level));
 
         if (properties != null)
             propertyList.AddRange(properties);
