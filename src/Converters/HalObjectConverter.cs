@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -15,9 +17,20 @@ public class HalObjectConverter : JsonConverter<HalObject>
 
     public override void Write(Utf8JsonWriter writer, HalObject value, JsonSerializerOptions options)
     {
-        writer.WriteStartObject();
-        foreach (var prop in typeof(HalObject).GetProperties())
+        var halObjectProperties = typeof(HalObject).GetProperties();
+        if (halObjectProperties.All(x => x.GetValue(value) == null || x.Name == "Href"))
         {
+            writer.WriteStringValue(value.Href);
+            return;
+        }
+
+        writer.WriteStartObject();
+        foreach (var prop in halObjectProperties)
+        {
+            var isIgnore = prop.GetCustomAttributes<JsonIgnoreAttribute>();
+            if (isIgnore.Count() != 0)
+                continue;
+
             var propValue = prop.GetValue(value);
             if (propValue != null)
             {

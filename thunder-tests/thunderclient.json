@@ -8,31 +8,13 @@
     "method": "GET",
     "sortNum": 10000,
     "created": "2022-06-22T18:37:14.555Z",
-    "modified": "2022-06-22T18:45:10.962Z",
+    "modified": "2022-06-24T15:54:17.390Z",
     "headers": [],
     "params": [],
     "tests": [
       {
-        "type": "res-code",
-        "custom": "",
-        "action": "equal",
-        "value": "200"
-      },
-      {
-        "type": "Content-Type",
-        "custom": "",
-        "action": "contains",
-        "value": "application/json"
-      },
-      {
-        "type": "res-time",
-        "custom": "",
-        "action": "<=",
-        "value": "200"
-      },
-      {
         "type": "json-query",
-        "custom": "json._links.self.href",
+        "custom": "json._links.self",
         "action": "equal",
         "value": "/api/contentapi"
       },
@@ -55,35 +37,17 @@
     "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
     "containerId": "",
     "name": "Can get profiles",
-    "url": "{{baseurl}}/profile",
+    "url": "{{baseurl}}/profile/1069",
     "method": "GET",
     "sortNum": 20000,
     "created": "2022-06-22T19:07:04.454Z",
-    "modified": "2022-06-22T19:21:34.805Z",
+    "modified": "2022-06-24T20:17:16.060Z",
     "headers": [],
     "params": [],
     "tests": [
       {
-        "type": "res-code",
-        "custom": "",
-        "action": "equal",
-        "value": "200"
-      },
-      {
-        "type": "Content-Type",
-        "custom": "",
-        "action": "contains",
-        "value": "application/json"
-      },
-      {
-        "type": "res-time",
-        "custom": "",
-        "action": "<=",
-        "value": "200"
-      },
-      {
         "type": "json-query",
-        "custom": "json._links.self.href",
+        "custom": "json._links.self",
         "action": "equal",
         "value": "/api/contentapi/profile"
       },
@@ -143,7 +107,7 @@
       },
       {
         "type": "json-query",
-        "custom": "json.items[0]._links.self.href",
+        "custom": "json.items[0]._links.self",
         "action": "equal",
         "value": "/api/contentapi/profile/1069"
       },
@@ -152,6 +116,525 @@
         "custom": "json.items[0]._links.parent.href",
         "action": "equal",
         "value": "/api/contentapi/profiles/1062"
+      }
+    ]
+  },
+  {
+    "_id": "9c4f1678-b659-4ccc-936c-b5d8848be71f",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get single profile",
+    "url": "{{baseurl}}/profile/1069",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2022-06-24T12:11:08.265Z",
+    "modified": "2022-06-24T15:54:37.227Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069"
+      }
+    ]
+  },
+  {
+    "_id": "7211efce-41fc-492f-886a-34d5328e6c6c",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get single profile and friends",
+    "url": "{{baseurl}}/profile/1069?expand=friends",
+    "method": "GET",
+    "sortNum": 40000,
+    "created": "2022-06-24T15:05:31.427Z",
+    "modified": "2022-06-24T15:54:40.380Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends"
+      }
+    ]
+  },
+  {
+    "_id": "2ba4ce0c-2ab8-41ac-86de-f1f77c92bc25",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get single profile and friends and photos",
+    "url": "{{baseurl}}/profile/1069?expand=friends,photo",
+    "method": "GET",
+    "sortNum": 50000,
+    "created": "2022-06-24T15:39:11.412Z",
+    "modified": "2022-06-24T15:54:43.491Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends,photo",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends,photo"
+      }
+    ]
+  },
+  {
+    "_id": "457f18c0-83d9-43c2-828a-4f2150404e3f",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get single profile and friends and their photos",
+    "url": "{{baseurl}}/profile/1069?expand=friends.photo",
+    "method": "GET",
+    "sortNum": 60000,
+    "created": "2022-06-24T15:39:20.568Z",
+    "modified": "2022-06-24T15:54:46.159Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends.photo",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends.photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.friends",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.friends",
+        "action": "notequal",
+        "value": "[]"
+      }
+    ]
+  },
+  {
+    "_id": "5bfca020-1668-4807-bc4c-67ff3f1446ab",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get single profile and friends and their photos and profile photos",
+    "url": "{{baseurl}}/profile/1069?expand=friends.photo,photo",
+    "method": "GET",
+    "sortNum": 70000,
+    "created": "2022-06-24T15:39:50.503Z",
+    "modified": "2022-06-24T15:54:48.879Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends.photo,photo",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends.photo,photo"
+      }
+    ]
+  },
+  {
+    "_id": "7ba7ef24-d477-43d3-bce1-6b408adc41fe",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get profiles and friends",
+    "url": "{{baseurl}}/profile?expand=friends",
+    "method": "GET",
+    "sortNum": 25000,
+    "created": "2022-06-24T15:50:04.436Z",
+    "modified": "2022-06-24T16:06:29.220Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile?expand=friends"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageSize",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageNumber",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalPageCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalItemCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].id",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].name",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends,photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.parent.href",
+        "action": "equal",
+        "value": "/api/contentapi/profiles/1062"
+      }
+    ]
+  },
+  {
+    "_id": "462ae4d7-83dc-4e37-b236-0670714564b4",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get profiles and friends and photos",
+    "url": "{{baseurl}}/profile?expand=friends,photo",
+    "method": "GET",
+    "sortNum": 27500,
+    "created": "2022-06-24T15:50:21.400Z",
+    "modified": "2022-06-24T16:05:29.178Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends,photo",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile?expand=friends,photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageSize",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageNumber",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalPageCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalItemCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].id",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].name",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends,photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.parent.href",
+        "action": "equal",
+        "value": "/api/contentapi/profiles/1062"
+      }
+    ]
+  },
+  {
+    "_id": "633f566f-0525-43b1-ab5d-b8816448ccee",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get profiles and friends and their photos",
+    "url": "{{baseurl}}/profile?expand=friends.photo",
+    "method": "GET",
+    "sortNum": 28750,
+    "created": "2022-06-24T15:50:38.462Z",
+    "modified": "2022-06-24T16:05:59.572Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends.photo",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile?expand=friends.photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageSize",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageNumber",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalPageCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalItemCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].id",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].name",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends,photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.parent.href",
+        "action": "equal",
+        "value": "/api/contentapi/profiles/1062"
+      }
+    ]
+  },
+  {
+    "_id": "a3de7b9c-08c9-4477-b90d-1cc517919ea3",
+    "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
+    "containerId": "",
+    "name": "Can get profiles and friends and their photos and profile photos",
+    "url": "{{baseurl}}/profile?expand=friends.photo,photo",
+    "method": "GET",
+    "sortNum": 29375,
+    "created": "2022-06-24T15:51:01.308Z",
+    "modified": "2022-06-24T16:04:06.179Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "expand",
+        "value": "friends.photo,photo",
+        "isPath": false
+      }
+    ],
+    "tests": [
+      {
+        "type": "json-query",
+        "custom": "json._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile?expand=friends.photo,photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageSize",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.pageNumber",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalPageCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.totalItemCount",
+        "action": "regex",
+        "value": "^[0-9]+$"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].id",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].name",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "notequal",
+        "value": "null"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1069?expand=friends.photo,photo"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0]._links.parent.href",
+        "action": "equal",
+        "value": "/api/contentapi/profiles/1062"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.items[0].friends[0]._links.self",
+        "action": "equal",
+        "value": "/api/contentapi/profile/1070?expand=photo"
       }
     ]
   }

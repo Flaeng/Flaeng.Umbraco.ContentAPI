@@ -8,8 +8,8 @@ namespace Flaeng.Umbraco.Extensions;
 
 public static class TypeExtensions
 {
-    public static bool IsEnumerableOfIPublishedContent(this Type t)
+    public static bool IsEnumerableOf<T>(this Type t)
         => typeof(IEnumerable).IsAssignableFrom(t)
-        && typeof(IPublishedContent).IsAssignableFrom(t.GetGenericArguments().FirstOrDefault());
+        && typeof(T).IsAssignableFrom(t.GetGenericArguments().FirstOrDefault());
 
 }

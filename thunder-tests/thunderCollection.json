@@ -4,6 +4,35 @@
     "colName": "ContentAPI",
     "created": "2022-06-22T18:37:03.777Z",
     "sortNum": 20000,
-    "folders": []
+    "folders": [],
+    "settings": {
+      "headers": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        },
+        {
+          "type": "res-body",
+          "custom": "",
+          "action": "isjson",
+          "value": ""
+        },
+        {
+          "type": "res-time",
+          "custom": "",
+          "action": "<",
+          "value": "50"
+        },
+        {
+          "type": "Content-Type",
+          "custom": "",
+          "action": "equal",
+          "value": "application/hal+json; charset=utf-8"
+        }
+      ]
+    }
   }
 ]

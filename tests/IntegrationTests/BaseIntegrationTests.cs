@@ -1,10 +1,23 @@
 using System.Text.Json;
 
+using Flaeng.Umbraco.ContentAPI.Handlers;
+using Flaeng.Umbraco.ContentAPI.Models;
+using Flaeng.Umbraco.ContentAPI.Options;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+
 using Moq;
 
 using Newtonsoft.Json.Linq;
 
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Web;
 
 namespace Flaeng.Umbraco.ContentAPI.Tests.IntegrationTests;
 
@@ -58,6 +71,122 @@ public abstract class BaseIntegrationTests : BaseTests
         QueryString = String.Empty;
         result = Controller!.Get($"scrumteam/8");
         objectResponse = JToken.Parse(JsonSerializer.Serialize(result.Value, SerializerOptions));
+    }
+
+    protected ContentApiController? Controller { get; private set; }
+    protected IHttpContextAccessor? HttpContextAccessor { get; private set; }
+
+    protected JsonSerializerOptions SerializerOptions => new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        // Converters = { new ObjectResponseConverter(), new CollectionResponseConverter() }
+    };
+
+    private QueryCollection Query = new();
+    protected string QueryString
+    {
+        get { return Query.Count == 0 ? String.Empty : "?" + String.Join("&", Query.Select(x => $"{x.Key}={x.Value}")); }
+        set { Query = value.TrimStart('?').Length == 0 ? new QueryCollection() : new QueryCollection(value.TrimStart('?').Split('&').Select(x => x.Split('=')).ToDictionary(x => x[0], x => new StringValues(x.Skip(1).FirstOrDefault()))); }
+    }
+
+    protected string Path { get; set; } = "";
+
+    protected void Initialize(IUmbracoApp app, Action<ContentApiOptions>? configureOptions = null)
+    {
+        var optionsMock = new Mock<IOptions<ContentApiOptions>>();
+        var options = new ContentApiOptions();
+        configureOptions?.Invoke(options);
+        optionsMock.Setup(x => x.Value).Returns(options);
+
+        var httpContextMock = new Mock<HttpContext>();
+        var httpRequestMock = new Mock<HttpRequest>();
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContextMock.Object);
+        httpRequestMock.Setup(x => x.Headers).Returns(new HeaderDictionary(new Dictionary<string, StringValues> {
+            { "content-language", new StringValues("da-dk") }
+        }));
+        httpRequestMock.Setup(x => x.Path).Returns(() => $"/" + Path.TrimStart('/'));
+        httpRequestMock.Setup(x => x.Query).Returns(() => Query);
+        httpRequestMock.Setup(x => x.QueryString).Returns(() => new QueryString(QueryString));
+        httpContextMock.Setup(x => x.Request).Returns(httpRequestMock.Object);
+
+        var umbracoContextAccessorMock = new Mock<IUmbracoContextAccessor>();
+        var outUmbracoContext = app.UmbracoContext;
+        umbracoContextAccessorMock
+            .Setup(x => x.TryGetUmbracoContext(out outUmbracoContext));
+
+        var linkFormatter = new DefaultLinkFormatter(
+            optionsMock.Object, 
+            httpContextAccessorMock.Object);
+
+        var filterHelper = new DefaultFilterInterpreter(httpContextAccessorMock.Object);
+
+        var expander = new DefaultExpander(
+            new Mock<ILogger<DefaultExpander>>().Object,
+            httpContextAccessorMock.Object
+        );
+
+        var linkPopulator = new DefaultLinkPopulator(
+            httpContextAccessorMock.Object,
+            umbracoContextAccessorMock.Object,
+            app.ContentTypeService,
+            optionsMock.Object,
+            linkFormatter);
+
+        var responseBuilder = new DefaultResponseBuilder(
+            umbracoContextAccessorMock.Object,
+            httpContextAccessorMock.Object,
+            linkPopulator,
+            expander
+        );
+
+        var requestInterpreter = new DefaultRequestInterpreter(
+            new Mock<ILogger<DefaultRequestInterpreter>>().Object,
+            optionsMock.Object,
+            umbracoContextAccessorMock.Object,
+            app.UmbracoHelper
+        );
+
+        var logger = new Mock<ILogger<ContentApiController>>();
+
+        Controller = new ContentApiController(
+            logger.Object,
+            app.AppCaches,
+            optionsMock.Object,
+            responseBuilder,
+            requestInterpreter
+        );
+        
+        var actionContext = new ActionContext(
+            httpContextMock.Object, 
+            new Microsoft.AspNetCore.Routing.RouteData(), 
+            new ControllerActionDescriptor());
+        
+        Controller.ControllerContext = new ControllerContext(actionContext);
+        Controller.ControllerContext.HttpContext = httpContextMock.Object;
+
+        HttpContextAccessor = httpContextAccessorMock.Object;
+    }
+
+    protected static ObjectResponse AssertAndGetObjectResponse(ActionResult<object> result)
+    {
+        Assert.NotNull(result);
+        Assert.NotNull(result.Value);
+        var response = result.Value as ObjectResponse;
+        Assert.NotNull(response);
+        return response!;
+    }
+
+    protected static CollectionResponse AssertAndGetCollectionResponse(ActionResult<object> result)
+    {
+        Assert.NotNull(result);
+        Assert.NotNull(result.Value);
+        var response = result.Value as CollectionResponse;
+        Assert.NotNull(response);
+        Assert.NotNull(response!.Items);
+        return response!;
     }
 
 }

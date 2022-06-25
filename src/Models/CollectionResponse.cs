@@ -27,9 +27,10 @@ public class CollectionResponse : ILinksContainer
 
     public IEnumerable<ObjectResponse> Items { get; init; }
 
+    [JsonIgnore]
     public string ItemContentType { get; init; }
 
-    public CollectionResponse(string itemContentType, IEnumerable<IPublishedContent> items, int pageNumber, int pageSize)
+    public CollectionResponse(string itemContentType, string culture, IEnumerable<IPublishedContent> items, int pageNumber, int pageSize)
     {
         this.ItemContentType = itemContentType;
         this.TotalItemCount = items.Count();
@@ -38,7 +39,7 @@ public class CollectionResponse : ILinksContainer
         this.Items = items
             .Skip(PageNumber * PageSize - pageSize)
             .Take(PageSize)
-            .Select(x => new ObjectResponse(x))
+            .Select(x => new ObjectResponse(x, culture))
             .ToArray();
     }
 }

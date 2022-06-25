@@ -4,7 +4,7 @@ namespace Flaeng.Umbraco.Extensions;
 
 public static class PublishedPropertyExtensions
 {
-    public static bool HasValueOfIEnumerableOfIPublishedContent(this IPublishedProperty property)
-        => property.PropertyType.ClrType.IsEnumerableOfIPublishedContent()
-        || property.PropertyType.ModelClrType.IsEnumerableOfIPublishedContent();
+    public static bool HasValueOfIEnumerableOfIPublishedElement(this IPublishedProperty property)
+        => property.PropertyType.ClrType.IsEnumerableOf<IPublishedElement>()
+        || property.PropertyType.ModelClrType.IsEnumerableOf<IPublishedElement>();
 }

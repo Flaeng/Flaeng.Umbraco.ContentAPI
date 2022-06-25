@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace Flaeng.Umbraco.ContentAPI.Options;
 
@@ -13,6 +12,7 @@ public interface IFluentContentApiOptions
     IContentApiOptions ExposeTranslationDictionary();
     IContentApiOptions UseCachingWithTimeout(TimeSpan timeout);
     IContentApiOptions UseCachingWithSmartCaching();
+    IContentApiOptions UseAbsolutePathInLinks();
     IContentApiOptions IgnoreLinks();
     IContentApiOptions UseJwtWithPrivateKey(string privateKey);
     IAllowCrudOperation AllowCreationOf(string contentTypeAlias);
@@ -76,6 +76,12 @@ public partial class ContentApiOptions : IFluentContentApiOptions, IAllowCrudOpe
     public IContentApiOptions IgnoreLinks()
     {
         this.HideLinks = true;
+        return this;
+    }
+
+    public IContentApiOptions UseAbsolutePathInLinks()
+    {
+        this.PrependAbsolutePathToLinks = true;
         return this;
     }
 

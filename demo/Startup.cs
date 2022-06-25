@@ -36,6 +36,7 @@ namespace demo
                 .Build();
 
             services.AddContentAPI();
+            // services.AddContentAPI(cfg => cfg.UseAbsolutePathInLinks());
         }
 
         /// <summary>

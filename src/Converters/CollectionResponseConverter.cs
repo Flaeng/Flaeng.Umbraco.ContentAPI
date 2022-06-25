@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -18,6 +20,10 @@ public class CollectionResponseConverter : JsonConverter<CollectionResponse>
         writer.WriteStartObject();
         foreach (var prop in typeof(CollectionResponse).GetProperties())
         {
+            var isIgnore = prop.GetCustomAttributes<JsonIgnoreAttribute>();
+            if (isIgnore.Count() != 0)
+                continue;
+
             var propValue = prop.GetValue(value);
             if (propValue != null)
             {

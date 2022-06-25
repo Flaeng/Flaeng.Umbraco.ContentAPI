@@ -1,18 +1,16 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Text.Json;
 
+using Flaeng.Umbraco.ContentAPI.Handlers;
+using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Cache;
-using Umbraco.Cms.Core.Models.PublishedContent;
-using Umbraco.Cms.Core.Web;
-using Umbraco.Cms.Web.Common;
 using Umbraco.Cms.Web.Common.Controllers;
 
 namespace Flaeng.Umbraco.ContentAPI;
@@ -21,46 +19,44 @@ namespace Flaeng.Umbraco.ContentAPI;
 public class ContentApiController : UmbracoApiController
 {
     protected readonly ILogger<ContentApiController> logger;
-    protected readonly UmbracoHelper umbracoHelper;
-    protected readonly IUmbracoContext umbracoContext;
     protected readonly AppCaches cache;
     protected readonly IContentApiOptions options;
     protected readonly IResponseBuilder responseBuilder;
-    protected readonly IFilterHandler filterHelper;
-    protected readonly ILinkPopulator linkPopulator;
+    protected readonly IRequestInterpreter requestInterpreter;
 
     public record BadRequestResponse(string error, string message);
-    protected BadRequestResponse NotFoundResponse = new BadRequestResponse("not_found", "Page not found");
     protected string Culture { get => Request.Headers.ContentLanguage.ToString(); }
 
     public ContentApiController(
             ILogger<ContentApiController> logger,
-            UmbracoHelper umbracoHelper,
-            IUmbracoContextAccessor umbracoContextAccessor,
             AppCaches cache,
-            IOptionsSnapshot<ContentApiOptions> options,
+            IOptions<ContentApiOptions> options,
             IResponseBuilder responseBuilder,
-            IFilterHandler filterHelper,
-            ILinkPopulator linkPopulator
+            IRequestInterpreter requestInterpreter
             )
     {
         this.logger = logger;
-        this.umbracoHelper = umbracoHelper;
-        umbracoContextAccessor.TryGetUmbracoContext(out this.umbracoContext);
         this.cache = cache;
         this.options = options.Value;
         this.responseBuilder = responseBuilder;
-        this.filterHelper = filterHelper;
-        this.linkPopulator = linkPopulator;
+        this.requestInterpreter = requestInterpreter;
+    }
+
+    public override OkObjectResult Ok([ActionResultObjectValue] object value)
+    {
+        var result = new OkObjectResult(value);
+        result.ContentTypes.Clear();
+        result.ContentTypes.Add("application/hal+json");
+        return result;
     }
 
     [HttpGet, Route("{*path}")]
-    public ActionResult<object> Get(string path)
+    public ActionResult<ILinksContainer> Get(string path)
     {
         try
         {
             if (!options.EnableCaching)
-                return GetResult(path);
+                return Ok(GetResult(path));
 
             var cacheKey = $"{Culture}_{path}";
             var result = cache.RuntimeCache.Get(
@@ -69,104 +65,37 @@ public class ContentApiController : UmbracoApiController
                     timeout: options.CacheTimeout,
                     isSliding: true);
 
-            return result;
+            return Ok(result);
         }
         catch (HalException e)
         {
             logger.LogInformation(e, "ContentAPI request returned non-successfull response");
-            if (e is ContentTypeNotFoundException || e is ContentNotFoundException)
-                return NotFound();
-
             return BadRequest(new BadRequestResponse(e.SystemMessage, e.Message));
         }
-    }
-
-    private object GetResult(string path)
-    {
-        if (String.IsNullOrWhiteSpace(path))
-            return linkPopulator.GetRoot();
-
-        var pathSplit = path.Split('/');
-        var rootContentTypeAlias = pathSplit[0];
-
-        if (pathSplit.Length == 1)
+        catch (Exception e)
         {
-            if (tryHandleUmbracoRequest(rootContentTypeAlias, out var result))
-            {
-                return responseBuilder.Build(rootContentTypeAlias, result);
-            }
-
-            var rootContentType = umbracoContext.Content.GetContentType(rootContentTypeAlias);
-            if (rootContentType == null)
-                throw new ContentTypeNotFoundException(rootContentTypeAlias);
-
-            var contentColl = umbracoContext.Content.GetByContentType(rootContentType);
-            contentColl = filterHelper.ApplyFilter(contentColl);
-            return responseBuilder.Build(rootContentTypeAlias, contentColl);
-        }
-
-        var isCollectionResponse = pathSplit.Length % 2 == 1;
-        var contentType = pathSplit[pathSplit.Length - (pathSplit.Length % 2 == 1 ? 1 : 2)];
-
-        if (isCollectionResponse)
-        {
-            var parentContentType = pathSplit[pathSplit.Length - (pathSplit.Length % 2) - 2];
-            var parentContentId = pathSplit[pathSplit.Length - (pathSplit.Length % 2) - 1];
-
-            var content = GetContentById(parentContentId, parentContentType);
-
-            IEnumerable<IPublishedContent> contentColl;
-            var property = content.GetProperty(contentType);
-            if (property != null)
-                contentColl = property.GetValue() as IEnumerable<IPublishedContent>;
-            else
-                contentColl = content.Children.Where(x => x.ContentType.Alias == contentType);
-
-            contentColl = filterHelper.ApplyFilter(contentColl);
-
-            return responseBuilder.Build(null, contentColl);
-        }
-        else
-        {
-            var contentId = pathSplit[pathSplit.Length - 1];
-            var content = GetContentById(contentId, contentType);
-            if (content == null)
-                throw new ContentNotFoundException(contentType, contentId);
-
-            return responseBuilder.Build(content);
+            logger.LogInformation(e, "ContentAPI request returned non-successfull response");
+            return StatusCode(500);
         }
     }
 
-    private bool tryHandleUmbracoRequest(string contentAlias, out IEnumerable<IPublishedContent> result)
+    private ILinksContainer GetResult(string path)
     {
-        result = null;
-        return false;
-        // switch (contentAlias.ToLower())
-        // {
-        //     case "dictionary":
-        //         // umbracoHelper.CultureDictionary;
-        //         break;
+        var result = requestInterpreter.Interprete(path);
 
-        //     default:
-        //         result = null;
-        //         return false;
-        // }
-    }
+        switch (result) {
+            case RootInterpreterResult rir: 
+                return responseBuilder.BuildRoot(rir);
 
-    private IPublishedContent GetContentById(string contentId, string contentTypeAlias)
-    {
-        var content =
-            int.TryParse(contentId, out int contentIntId)
-            ? umbracoContext.Content.GetById(contentIntId)
+            case Handlers.ObjectInterpreterResult oir:
+                return oir.Value == null ? null : responseBuilder.Build(oir);
 
-            : Guid.TryParse(contentId, out Guid contentGuidId)
-            ? umbracoContext.Content.GetById(contentGuidId)
+            case CollectionInterpreterResult cir:
+                return responseBuilder.Build(cir);
 
-            : umbracoContext.Content.GetById(Udi.Create(contentTypeAlias, contentId));
-
-        return content == null || content.ContentType.Alias != contentTypeAlias
-            ? null
-            : content;
+            default:
+                throw new Exception("Unknown interpretor result");
+        }
     }
 
 }
