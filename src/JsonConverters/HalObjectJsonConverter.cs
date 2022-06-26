@@ -53,16 +53,16 @@ public class HalObjectJsonConverter : JsonConverter<HalObject>
                 var colleciton = property.Value as IEnumerable<HalObject>;
                 writeCollectionProperty(writer, property.Key.Alias, colleciton, options);
             }
-            else 
+            else
                 writeSimpleProperty(writer, property.Key.Alias, property.Value, options);
         }
     }
 
     private void writeSimpleProperty(
         Utf8JsonWriter writer,
-        string alias, 
-        object value, 
-        JsonSerializerOptions options 
+        string alias,
+        object value,
+        JsonSerializerOptions options
         )
     {
         switch (value)

@@ -29,10 +29,10 @@ public class HalCollection : ILinksContainer
     public string ItemContentType { get; init; }
 
     public HalCollection(
-        string itemContentType, 
+        string itemContentType,
         int totalItemCount,
-        IEnumerable<HalObject> items, 
-        int pageNumber, 
+        IEnumerable<HalObject> items,
+        int pageNumber,
         int pageSize)
     {
         this.ItemContentType = itemContentType;

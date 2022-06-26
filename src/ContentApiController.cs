@@ -70,7 +70,7 @@ public class ContentApiController : UmbracoApiController
 
             if (result == null)
                 return NotFound();
-                
+
             return Ok(result);
         }
         catch (HalException e)
