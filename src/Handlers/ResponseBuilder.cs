@@ -173,11 +173,11 @@ public class DefaultResponseBuilder : IResponseBuilder
             .Select(x => ConvertToHalObject(x))
             .ToArray();
         var result = new HalCollection(request.ContentTypeAlias, totalItemCount, page, pageNumber, pageSize);
-        
+
         string expandParam = ((string)httpContext.Request.Query["expand"]) ?? String.Empty;
         string[] expand = ConvertExpandStringToArray(expandParam);
         linkPopulator.Populate(result, expand);
-        
+
         return result;
     }
 

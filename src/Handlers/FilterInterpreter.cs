@@ -49,7 +49,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
                 var val = String.Join(" ", split.Skip(3));
                 collection = collection.Where(x => !ApplyOperator(x, key, opr, val));
             }
-            else 
+            else
             {
                 var val = String.Join(" ", split.Skip(2));
                 collection = collection.Where(x => ApplyOperator(x, key, opr, val));
@@ -104,7 +104,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
 
         switch (propertyAlias.ToLower())
         {
-            case "url": 
+            case "url":
                 if (element is IPublishedContent content)
                     return content.Url();
                 break;
