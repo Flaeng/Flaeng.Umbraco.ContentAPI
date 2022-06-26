@@ -46,7 +46,7 @@ public class DefaultResponseBuilder : IResponseBuilder
     public virtual HalObject Build(ObjectInterpreterResult request)
     {
         var result = ConvertToHalObject(request.Value);
-        linkPopulator.Populate(result);
+        // linkPopulator.Populate(result);
         return result;
     }
 
@@ -119,6 +119,7 @@ public class DefaultResponseBuilder : IResponseBuilder
         if (propertiesToExpand.Any())
             throw new ExpansionException(propertiesToExpand.First());
 
+        linkPopulator.Populate(result, expandPath);
         return result;
     }
 
@@ -174,7 +175,9 @@ public class DefaultResponseBuilder : IResponseBuilder
             .Select(x => ConvertToHalObject(x))
             .ToArray();
         var result = new HalCollection(request.ContentTypeAlias, totalItemCount, page, pageNumber, pageSize);
-        linkPopulator.Populate(result);
+        string expandParam = ((string)httpContext.Request.Query["expand"]) ?? String.Empty;
+        string[] expand = ConvertExpandStringToArray(expandParam);
+        linkPopulator.Populate(result, expand);
         return result;
     }
 

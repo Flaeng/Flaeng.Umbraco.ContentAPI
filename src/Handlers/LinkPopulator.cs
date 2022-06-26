@@ -19,8 +19,8 @@ namespace Flaeng.Umbraco.ContentAPI.Handlers;
 public interface ILinkPopulator
 {
     void PopulateRoot(LinksContainer item);
-    void Populate(HalObject item);
-    void Populate(HalCollection coll);
+    void Populate(HalObject item, string[] expand);
+    void Populate(HalCollection coll, string[] expand);
 }
 public class DefaultLinkPopulator : ILinkPopulator
 {
@@ -50,7 +50,7 @@ public class DefaultLinkPopulator : ILinkPopulator
         if (options.HideLinks)
             return;
 
-        AddSelfLink(item);
+        AddSelfLink(item, new string[0]);
         AppendQueryStringToSelfLink(item);
 
         if (options.UmbracoOptions.ExposeMedia)
@@ -75,7 +75,7 @@ public class DefaultLinkPopulator : ILinkPopulator
             item.Links.Add(contentType.Alias, new LinkObject { Name = contentType.Name, Href = linkFormatter.FormatHref(contentType.Alias) });
     }
 
-    public virtual void AddSelfLink(ILinksContainer container)
+    public virtual void AddSelfLink(ILinksContainer container, string[] expand)
     {
         switch (container)
         {
@@ -88,7 +88,7 @@ public class DefaultLinkPopulator : ILinkPopulator
 
                     var hal = new LinkObject
                     {
-                        Href = linkFormatter.FormatHref(path)
+                        Href = linkFormatter.FormatHref(path, expand)
                     };
                     container.Links.Add("self", hal);
                 }
@@ -98,7 +98,7 @@ public class DefaultLinkPopulator : ILinkPopulator
                 {
                     var hal = new LinkObject
                     {
-                        Href = linkFormatter.FormatHref($"{cr.ItemContentType}")
+                        Href = linkFormatter.FormatHref($"{cr.ItemContentType}", expand)
                     };
                     container.Links.Add("self", hal);
                 }
@@ -121,17 +121,17 @@ public class DefaultLinkPopulator : ILinkPopulator
         container.Links["self"].Href += httpContext.Request.QueryString;
     }
 
-    public virtual void Populate(HalObject item)
-        => Populate(item, false);
+    public virtual void Populate(HalObject item, string[] expand)
+    //     => Populate(item, expand, false);
 
-    public virtual void Populate(HalObject item, bool isInternalCall)
+    // public virtual void Populate(HalObject item, string[] expand, bool isInternalCall)
     {
         if (options.HideLinks)
             return;
 
-        AddSelfLink(item);
-        if (isInternalCall == false)
-            AppendQueryStringToSelfLink(item);
+        AddSelfLink(item, expand);
+        // if (isInternalCall == false)
+        //     AppendQueryStringToSelfLink(item);
 
         if (item.Parent != null)
         {
@@ -169,10 +169,10 @@ public class DefaultLinkPopulator : ILinkPopulator
 
     public virtual string formatNameFromAlias(string alias) => Char.ToUpper(alias[0]) + alias.Substring(1);
 
-    public virtual void Populate(HalCollection coll)
+    public virtual void Populate(HalCollection coll, string[] expand)
     {
-        AddSelfLink(coll);
-        AppendQueryStringToSelfLink(coll);
+        AddSelfLink(coll, expand);
+        // AppendQueryStringToSelfLink(coll);
 
         var currentUrl = httpContext.Request.Path.ToString();
         var currentQuery = new MutableQueryCollection(httpContext.Request.Query);
@@ -203,19 +203,21 @@ public class DefaultLinkPopulator : ILinkPopulator
             }
         }
 
-        foreach (var item in coll.Items)
-        {
-            Populate(item, true);
+        // foreach (var item in coll.Items)
+        // {
+        //     // Populate(item, expand);
+        //     // Populate(item, expand, true);
 
-            var childHalObjects = item.Properties
-                .Where(x => x.Value is IEnumerable<HalObject>)
-                .Select(x => x.Value)
-                .Cast<IEnumerable<HalObject>>()
-                .SelectMany(x => x);
-            foreach (var property in childHalObjects)
-            {
-                Populate(property, true);
-            }
-        }
+        //     var childHalObjects = item.Properties
+        //         .Where(x => x.Value is IEnumerable<HalObject>)
+        //         .Select(x => x.Value)
+        //         .Cast<IEnumerable<HalObject>>()
+        //         .SelectMany(x => x);
+        //     foreach (var property in childHalObjects)
+        //     {
+        //         Populate(property, expand);
+        //         // Populate(property, expand, true);
+        //     }
+        // }
     }
 }

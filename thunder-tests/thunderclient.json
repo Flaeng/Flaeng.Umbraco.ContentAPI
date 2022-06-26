@@ -37,11 +37,11 @@
     "colId": "6e5b5297-d19c-430b-90d9-d2c31966c3fc",
     "containerId": "",
     "name": "Can get profiles",
-    "url": "{{baseurl}}/profile/1069",
+    "url": "{{baseurl}}/profile",
     "method": "GET",
     "sortNum": 20000,
     "created": "2022-06-22T19:07:04.454Z",
-    "modified": "2022-06-24T20:17:16.060Z",
+    "modified": "2022-06-26T09:01:40.640Z",
     "headers": [],
     "params": [],
     "tests": [
@@ -269,7 +269,7 @@
     "method": "GET",
     "sortNum": 25000,
     "created": "2022-06-24T15:50:04.436Z",
-    "modified": "2022-06-24T16:06:29.220Z",
+    "modified": "2022-06-26T09:02:15.440Z",
     "headers": [],
     "params": [
       {
@@ -343,7 +343,7 @@
         "type": "json-query",
         "custom": "json.items[0]._links.self",
         "action": "equal",
-        "value": "/api/contentapi/profile/1069?expand=friends,photo"
+        "value": "/api/contentapi/profile/1069?expand=friends"
       },
       {
         "type": "json-query",
@@ -455,7 +455,7 @@
     "method": "GET",
     "sortNum": 28750,
     "created": "2022-06-24T15:50:38.462Z",
-    "modified": "2022-06-24T16:05:59.572Z",
+    "modified": "2022-06-26T12:11:22.697Z",
     "headers": [],
     "params": [
       {
@@ -529,7 +529,7 @@
         "type": "json-query",
         "custom": "json.items[0]._links.self",
         "action": "equal",
-        "value": "/api/contentapi/profile/1069?expand=friends,photo"
+        "value": "/api/contentapi/profile/1069?expand=friends.photo"
       },
       {
         "type": "json-query",
