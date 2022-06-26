@@ -348,7 +348,7 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
         public UmbracoProperty(string alias, T value)
         {
             values.Add(String.Empty, value);
-            
+
             this.Alias = alias;
             var propertyType = new Mock<IPublishedPropertyType>();
             propertyType.Setup(x => x.ClrType).Returns(typeof(T).GetType());
@@ -356,16 +356,16 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
             this.PropertyType = propertyType.Object;
         }
 
-        public override object? GetSourceValue(string? culture = null, string? segment = null) 
+        public override object? GetSourceValue(string? culture = null, string? segment = null)
             => throw new NotImplementedException();
-        
-        public override object? GetValue(string? culture = null, string? segment = null) 
+
+        public override object? GetValue(string? culture = null, string? segment = null)
             => values[culture ?? String.Empty];
-        
-        public override object? GetXPathValue(string? culture = null, string? segment = null) 
+
+        public override object? GetXPathValue(string? culture = null, string? segment = null)
             => throw new NotImplementedException();
-        
-        public override bool HasValue(string? culture = null, string? segment = null) 
+
+        public override bool HasValue(string? culture = null, string? segment = null)
             => values.ContainsKey(culture ?? String.Empty);
     }
 }

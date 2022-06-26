@@ -111,7 +111,7 @@ public class DefaultLinkPopulator : ILinkPopulator
 
                     if (builder.Length != 1)
                         hal.Href += builder.ToString().Substring(0, builder.Length - 1);
-                    
+
                     container.Links.Add("self", hal);
                 }
                 break;
