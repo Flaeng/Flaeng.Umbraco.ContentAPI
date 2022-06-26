@@ -54,23 +54,23 @@ public class DefaultLinkPopulator : ILinkPopulator
         AddSelfLink(item, new string[0]);
         AppendQueryStringToSelfLink(item);
 
-        if (options.UmbracoOptions.ExposeMedia)
-            item.Links.Add("media", new LinkObject { Name = "Media", Href = linkFormatter.FormatHref("media") });
+        // if (options.UmbracoOptions.ExposeMedia)
+        //     item.Links.Add("media", new LinkObject { Name = "Media", Href = linkFormatter.FormatHref("media") });
 
-        if (options.UmbracoOptions.ExposeMembers)
-            item.Links.Add("members", new LinkObject { Name = "Members", Href = linkFormatter.FormatHref("members") });
+        // if (options.UmbracoOptions.ExposeMembers)
+        //     item.Links.Add("members", new LinkObject { Name = "Members", Href = linkFormatter.FormatHref("members") });
 
-        if (options.UmbracoOptions.ExposeMemberGroups)
-            item.Links.Add("memberGroups", new LinkObject { Name = "Member Groups", Href = linkFormatter.FormatHref("memberGroups") });
+        // if (options.UmbracoOptions.ExposeMemberGroups)
+        //     item.Links.Add("memberGroups", new LinkObject { Name = "Member Groups", Href = linkFormatter.FormatHref("memberGroups") });
 
-        if (options.UmbracoOptions.ExposeUsers)
-            item.Links.Add("users", new LinkObject { Name = "Users", Href = linkFormatter.FormatHref("users") });
+        // if (options.UmbracoOptions.ExposeUsers)
+        //     item.Links.Add("users", new LinkObject { Name = "Users", Href = linkFormatter.FormatHref("users") });
 
-        if (options.UmbracoOptions.ExposeForms)
-            item.Links.Add("forms", new LinkObject { Name = "Forms", Href = linkFormatter.FormatHref("forms") });
+        // if (options.UmbracoOptions.ExposeForms)
+        //     item.Links.Add("forms", new LinkObject { Name = "Forms", Href = linkFormatter.FormatHref("forms") });
 
-        if (options.UmbracoOptions.ExposeTranslationDictionary)
-            item.Links.Add("dictionary", new LinkObject { Name = "Dictionary", Href = linkFormatter.FormatHref("dictionary") });
+        // if (options.UmbracoOptions.ExposeTranslationDictionary)
+        //     item.Links.Add("dictionary", new LinkObject { Name = "Dictionary", Href = linkFormatter.FormatHref("dictionary") });
 
         foreach (var contentType in contentTypeService.GetAll())
             item.Links.Add(contentType.Alias, new LinkObject { Name = contentType.Name, Href = linkFormatter.FormatHref(contentType.Alias) });

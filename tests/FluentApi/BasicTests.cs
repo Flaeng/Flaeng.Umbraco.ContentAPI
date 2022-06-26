@@ -5,37 +5,37 @@ namespace Flaeng.Umbraco.ContentAPI.Tests;
 public class BasicTests
 {
 
-    [Fact]
-    public void Can_add_creation_option()
-    {
-        IContentApiOptions options = new ContentApiOptions();
-        Assert.Empty(options.CreationOptions);
+    // [Fact]
+    // public void Can_add_creation_option()
+    // {
+    //     IContentApiOptions options = new ContentApiOptions();
+    //     Assert.Empty(options.CreationOptions);
 
-        IAllowCrudOperation opr;
-        options = opr = options.AllowCreationOf("test");
-        Assert.Contains(options.CreationOptions,
-            x => x.ContentTypeAlias == "test" && x.Authorize == null);
+    //     IAllowCrudOperation opr;
+    //     options = opr = options.AllowCreationOf("test");
+    //     Assert.Contains(options.CreationOptions,
+    //         x => x.ContentTypeAlias == "test" && x.Authorize == null);
 
-        opr.If(x => true);
-        Assert.Contains(options.CreationOptions,
-            x => x.ContentTypeAlias == "test" && x.Authorize != null);
-    }
+    //     opr.If(x => true);
+    //     Assert.Contains(options.CreationOptions,
+    //         x => x.ContentTypeAlias == "test" && x.Authorize != null);
+    // }
 
-    [Fact]
-    public void Can_add_editing_option()
-    {
-        IContentApiOptions options = new ContentApiOptions();
-        Assert.Empty(options.EditingOptions);
+    // [Fact]
+    // public void Can_add_editing_option()
+    // {
+    //     IContentApiOptions options = new ContentApiOptions();
+    //     Assert.Empty(options.EditingOptions);
 
-        IAllowCrudOperation opr;
-        options = opr = options.AllowEditingOf("test");
-        Assert.Contains(options.EditingOptions,
-            x => x.ContentTypeAlias == "test" && x.Authorize == null);
+    //     IAllowCrudOperation opr;
+    //     options = opr = options.AllowEditingOf("test");
+    //     Assert.Contains(options.EditingOptions,
+    //         x => x.ContentTypeAlias == "test" && x.Authorize == null);
 
-        opr.If(x => true);
-        Assert.Contains(options.EditingOptions,
-            x => x.ContentTypeAlias == "test" && x.Authorize != null);
-    }
+    //     opr.If(x => true);
+    //     Assert.Contains(options.EditingOptions,
+    //         x => x.ContentTypeAlias == "test" && x.Authorize != null);
+    // }
 
     [Fact]
     public void Can_hide_links()
@@ -59,14 +59,14 @@ public class BasicTests
         Assert.Equal(TimeSpan.FromHours(1), options.CacheTimeout);
     }
 
-    [Fact]
-    public void Can_setup_smart_caching()
-    {
-        IContentApiOptions options = new ContentApiOptions();
-        Assert.Equal(default, options.EnableSmartCaching);
+    // [Fact]
+    // public void Can_setup_smart_caching()
+    // {
+    //     IContentApiOptions options = new ContentApiOptions();
+    //     Assert.Equal(default, options.EnableSmartCaching);
 
-        options = options.UseCachingWithSmartCaching();
-        Assert.True(options.EnableSmartCaching);
-    }
+    //     options = options.UseCachingWithSmartCaching();
+    //     Assert.True(options.EnableSmartCaching);
+    // }
 
 }

@@ -103,6 +103,8 @@ public class DefaultRequestInterpreter : IRequestInterpreter
             var parentContentId = pathSplit[pathSplit.Length - (pathSplit.Length % 2) - 1];
 
             var content = GetContentById(parentContentId, parentContentType);
+            if (content == null)
+                return false;
 
             IEnumerable<IPublishedElement> contentColl;
             var property = content.GetProperty(contentType);
@@ -149,39 +151,39 @@ public class DefaultRequestInterpreter : IRequestInterpreter
 
     public virtual bool tryInterpreteUmbracoRequest(string[] request, out IInterpreterResult result)
     {
-        var opts = options.UmbracoOptions;
+        // var opts = options.UmbracoOptions;
         result = null;
         switch (request[0].ToLower())
         {
-            case "media":
-                return opts.ExposeMedia == false
-                    ? false
-                    : TryGetUmbracoItem(umbracoContext.Media, request, out result);
+            // case "media":
+            //     return opts.ExposeMedia == false
+            //         ? false
+            //         : TryGetUmbracoItem(umbracoContext.Media, request, out result);
 
-            case "members":
-                if (opts.ExposeMembers == false)
-                    return false;
-                throw new NotImplementedException();
+            // case "members":
+            //     if (opts.ExposeMembers == false)
+            //         return false;
+            //     throw new NotImplementedException();
 
-            case "membergroups":
-                if (opts.ExposeMemberGroups == false)
-                    return false;
-                throw new NotImplementedException();
+            // case "membergroups":
+            //     if (opts.ExposeMemberGroups == false)
+            //         return false;
+            //     throw new NotImplementedException();
 
-            case "users":
-                if (opts.ExposeUsers == false)
-                    return false;
-                throw new NotImplementedException();
+            // case "users":
+            //     if (opts.ExposeUsers == false)
+            //         return false;
+            //     throw new NotImplementedException();
 
-            case "forms":
-                if (opts.ExposeForms == false)
-                    return false;
-                throw new NotImplementedException();
+            // case "forms":
+            //     if (opts.ExposeForms == false)
+            //         return false;
+            //     throw new NotImplementedException();
 
-            case "dictionary":
-                if (opts.ExposeTranslationDictionary == false)
-                    return false;
-                throw new NotImplementedException();
+            // case "dictionary":
+            //     if (opts.ExposeTranslationDictionary == false)
+            //         return false;
+            //     throw new NotImplementedException();
 
             default:
                 return false;
