@@ -27,6 +27,7 @@ public class HalCollection : ILinksContainer
 
     [JsonIgnore]
     public string ItemContentType { get; init; }
+    public const int DefaultPageSize = 20;
 
     public HalCollection(
         string itemContentType,

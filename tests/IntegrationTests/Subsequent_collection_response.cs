@@ -6,7 +6,7 @@ public class Subsequent_collection_response : BaseIntegrationTests
     [Fact]
     public void Has_self_link()
     {
-        Assert.Equal("/api/contentapi/employee?pageNumber=2", subsequentCollectionResponse["_links"]!["self"]!.Value<string>("href"));
+        Assert.Equal("/api/contentapi/employee?pageNumber=2", subsequentCollectionResponse["_links"]!.Value<string>("self"));
     }
 
     [Fact]

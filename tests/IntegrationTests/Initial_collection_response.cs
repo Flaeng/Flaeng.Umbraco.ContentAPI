@@ -6,7 +6,7 @@ public class Initial_collection_response : BaseIntegrationTests
     [Fact]
     public void Has_self_link()
     {
-        Assert.Equal("/api/contentapi/employee", initialCollectionResponse["_links"]!["self"]!.Value<string>("href"));
+        Assert.Equal("/api/contentapi/employee", initialCollectionResponse["_links"]!.Value<string>("self"));
     }
 
     [Fact]

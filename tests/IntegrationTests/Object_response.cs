@@ -6,7 +6,7 @@ public class Object_response : BaseIntegrationTests
     [Fact]
     public void Has_self_link()
     {
-        Assert.Equal("/api/contentapi/scrumteam/8", objectResponse["_links"]!["self"]!.Value<string>("href"));
+        Assert.Equal("/api/contentapi/scrumteam/8", objectResponse["_links"]!.Value<string>("self"));
     }
 
     [Fact]

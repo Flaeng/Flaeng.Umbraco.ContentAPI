@@ -329,28 +329,43 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 
     public void AddDictionaryItem(string key, string text) => CultureDictionary.Add(key, text);
 
-    public class UmbracoProperty : IPublishedProperty
+    public abstract class UmbracoProperty : IPublishedProperty
     {
-        public IPublishedPropertyType PropertyType { get; init; }
-        public string Alias { get; init; }
+        public abstract IPublishedPropertyType PropertyType { get; init; }
+        public abstract string Alias { get; init; }
 
+        public abstract object? GetSourceValue(string? culture = null, string? segment = null);
+        public abstract object? GetValue(string? culture = null, string? segment = null);
+        public abstract object? GetXPathValue(string? culture = null, string? segment = null);
+        public abstract bool HasValue(string? culture = null, string? segment = null);
+    }
+    public class UmbracoProperty<T> : UmbracoProperty, IPublishedProperty
+    {
+        public override IPublishedPropertyType PropertyType { get; init; }
+        public override string Alias { get; init; }
         readonly Dictionary<string, object?> values = new Dictionary<string, object?>();
 
-        public UmbracoProperty(IPublishedPropertyType propertyType, string alias)
-        {
-            this.Alias = alias;
-            this.PropertyType = propertyType;
-        }
-
-        public UmbracoProperty(IPublishedPropertyType propertyType, string alias, object? value)
-            : this(propertyType, alias)
+        public UmbracoProperty(string alias, T value)
         {
             values.Add(String.Empty, value);
+            
+            this.Alias = alias;
+            var propertyType = new Mock<IPublishedPropertyType>();
+            propertyType.Setup(x => x.ClrType).Returns(typeof(T).GetType());
+            propertyType.Setup(x => x.ModelClrType).Returns(typeof(T).GetType());
+            this.PropertyType = propertyType.Object;
         }
 
-        public object? GetSourceValue(string? culture = null, string? segment = null) => throw new NotImplementedException();
-        public object? GetValue(string? culture = null, string? segment = null) => values[culture ?? String.Empty];
-        public object? GetXPathValue(string? culture = null, string? segment = null) => throw new NotImplementedException();
-        public bool HasValue(string? culture = null, string? segment = null) => values.ContainsKey(culture ?? String.Empty);
+        public override object? GetSourceValue(string? culture = null, string? segment = null) 
+            => throw new NotImplementedException();
+        
+        public override object? GetValue(string? culture = null, string? segment = null) 
+            => values[culture ?? String.Empty];
+        
+        public override object? GetXPathValue(string? culture = null, string? segment = null) 
+            => throw new NotImplementedException();
+        
+        public override bool HasValue(string? culture = null, string? segment = null) 
+            => values.ContainsKey(culture ?? String.Empty);
     }
 }

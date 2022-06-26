@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
@@ -100,6 +101,17 @@ public class DefaultLinkPopulator : ILinkPopulator
                     {
                         Href = linkFormatter.FormatHref($"{cr.ItemContentType}", expand)
                     };
+
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append(expand.Length != 0 ? '&' : "?");
+                    if (cr.PageNumber != 1)
+                        builder.Append($"pageNumber={cr.PageNumber}&");
+                    if (cr.PageSize != HalCollection.DefaultPageSize)
+                        builder.Append($"pageSize={cr.PageSize}&");
+
+                    if (builder.Length != 1)
+                        hal.Href += builder.ToString().Substring(0, builder.Length - 1);
+                    
                     container.Links.Add("self", hal);
                 }
                 break;

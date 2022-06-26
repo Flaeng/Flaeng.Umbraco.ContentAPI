@@ -155,7 +155,7 @@ public class DefaultResponseBuilder : IResponseBuilder
         if (int.TryParse(Request.Query.GetValue("pageNumber", "1"), out pageNumber) == false)
             throw new InvalidQueryParameterException("pageNumber");
 
-        if (int.TryParse(Request.Query.GetValue("pageSize", "20"), out pageSize) == false)
+        if (int.TryParse(Request.Query.GetValue("pageSize", HalCollection.DefaultPageSize.ToString()), out pageSize) == false)
             throw new InvalidQueryParameterException("pageSize");
 
         string orderBy = Request.Query.GetValue("orderBy");
