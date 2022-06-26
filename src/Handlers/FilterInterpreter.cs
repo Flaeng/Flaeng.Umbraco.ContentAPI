@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Extensions;
 
 namespace Flaeng.Umbraco.ContentAPI.Handlers;
 
@@ -40,9 +41,20 @@ public class DefaultFilterInterpreter : IFilterInterpreter
 
             var key = split[0];
             var opr = split[1];
-            var val = String.Join(" ", split.Skip(2));
 
-            collection = collection.Where(x => ApplyOperator(x, key, opr, val));
+            bool isNotOperator = opr.Equals("not", StringComparison.InvariantCultureIgnoreCase);
+            if (isNotOperator)
+            {
+                opr = split[2];
+                var val = String.Join(" ", split.Skip(3));
+                collection = collection.Where(x => !ApplyOperator(x, key, opr, val));
+            }
+            else 
+            {
+                var val = String.Join(" ", split.Skip(2));
+                collection = collection.Where(x => ApplyOperator(x, key, opr, val));
+            }
+
         }
         return collection;
     }
@@ -79,17 +91,25 @@ public class DefaultFilterInterpreter : IFilterInterpreter
         };
     }
 
-    public virtual object GetPropertyValue(IPublishedElement content, string propertyAlias)
+    public virtual object GetPropertyValue(IPublishedElement element, string propertyAlias)
     {
-        var publishedProperty = content.GetProperty(propertyAlias);
+        var publishedProperty = element.GetProperty(propertyAlias);
         if (publishedProperty is not null)
             return publishedProperty.GetValue(Culture);
 
-        var classProperty = content.GetType().GetProperties()
+        var classProperty = element.GetType().GetProperties()
             .SingleOrDefault(x => x.Name.Equals(propertyAlias, StringComparison.InvariantCultureIgnoreCase));
         if (classProperty is not null)
-            return classProperty.GetValue(content);
+            return classProperty.GetValue(element);
 
-        throw new UnknownPropertyException(content.ContentType.Alias, propertyAlias);
+        switch (propertyAlias.ToLower())
+        {
+            case "url": 
+                if (element is IPublishedContent content)
+                    return content.Url();
+                break;
+        }
+
+        throw new UnknownPropertyException(element.ContentType.Alias, propertyAlias);
     }
 }

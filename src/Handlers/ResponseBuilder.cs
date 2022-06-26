@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Flaeng.Umbraco.ContentAPI.Handlers;
 public interface IResponseBuilder
@@ -44,11 +45,7 @@ public class DefaultResponseBuilder : IResponseBuilder
     }
 
     public virtual HalObject Build(ObjectInterpreterResult request)
-    {
-        var result = ConvertToHalObject(request.Value);
-        // linkPopulator.Populate(result);
-        return result;
-    }
+        => ConvertToHalObject(request.Value);
 
     public virtual string[] ConvertExpandStringToArray(string expand)
     {
@@ -92,6 +89,7 @@ public class DefaultResponseBuilder : IResponseBuilder
             result.SetProperty("parentId", content.Parent?.Id ?? -1);
             result.SetProperty("path", content.Path);
             result.SetProperty("sortOrder", content.SortOrder);
+            result.SetProperty("url", content.Url());
         }
 
         var propertiesToExpand = expandPath.Where(x => !x.Contains(".")).ToList();
@@ -175,9 +173,11 @@ public class DefaultResponseBuilder : IResponseBuilder
             .Select(x => ConvertToHalObject(x))
             .ToArray();
         var result = new HalCollection(request.ContentTypeAlias, totalItemCount, page, pageNumber, pageSize);
+        
         string expandParam = ((string)httpContext.Request.Query["expand"]) ?? String.Empty;
         string[] expand = ConvertExpandStringToArray(expandParam);
         linkPopulator.Populate(result, expand);
+        
         return result;
     }
 

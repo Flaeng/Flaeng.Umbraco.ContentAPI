@@ -104,7 +104,10 @@ public class DefaultRequestInterpreter : IRequestInterpreter
 
             var content = GetContentById(parentContentId, parentContentType);
             if (content == null)
+            {
+                logger.LogWarning($"Failed to find content of type '{contentType}' with id '{parentContentId}'");
                 return false;
+            }
 
             IEnumerable<IPublishedElement> contentColl;
             var property = content.GetProperty(contentType);
