@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
 using Flaeng.Umbraco.Extensions;
 
@@ -25,8 +26,8 @@ public record UmbracoInterpreterResult(IDictionary<string, object> Value)
 public record ObjectInterpreterResult(string ContentTypeAlias, IPublishedContent Value)
     : IInterpreterResult<IPublishedContent>;
 
-public record CollectionInterpreterResult(string ContentTypeAlias, IEnumerable<IPublishedContent> Value)
-    : IInterpreterResult<IEnumerable<IPublishedContent>>;
+public record CollectionInterpreterResult(string ContentTypeAlias, IEnumerable<IPublishedElement> Value)
+    : IInterpreterResult<IEnumerable<IPublishedElement>>;
 public interface IRequestInterpreter
 {
     IInterpreterResult Interprete(string localPath);
@@ -103,16 +104,16 @@ public class DefaultRequestInterpreter : IRequestInterpreter
 
             var content = GetContentById(parentContentId, parentContentType);
 
-            IEnumerable<IPublishedContent> contentColl;
+            IEnumerable<IPublishedElement> contentColl;
             var property = content.GetProperty(contentType);
             if (property != null)
-                contentColl = property.GetValue() as IEnumerable<IPublishedContent>;
+                contentColl = property.GetValue() as IEnumerable<IPublishedElement>;
             else
                 contentColl = content.Children.Where(x => x.ContentType.Alias == contentType);
 
             contentColl = filterInterpreter.ApplyFilter(contentColl);
 
-            result = new CollectionInterpreterResult(contentType, contentColl ?? new List<IPublishedContent>());
+            result = new CollectionInterpreterResult(contentType, contentColl ?? new List<IPublishedElement>());
             return true;
         }
         else

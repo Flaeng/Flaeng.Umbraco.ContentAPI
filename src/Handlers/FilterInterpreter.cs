@@ -10,7 +10,7 @@ namespace Flaeng.Umbraco.ContentAPI.Handlers;
 
 public interface IFilterInterpreter
 {
-    IEnumerable<IPublishedContent> ApplyFilter(IEnumerable<IPublishedContent> collection);
+    IEnumerable<T> ApplyFilter<T>(IEnumerable<T> collection) where T : IPublishedElement;
 }
 public class DefaultFilterInterpreter : IFilterInterpreter
 {
@@ -26,7 +26,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
         this.httpContext = httpContextAccessor.HttpContext;
     }
 
-    public virtual IEnumerable<IPublishedContent> ApplyFilter(IEnumerable<IPublishedContent> collection)
+    public virtual IEnumerable<T> ApplyFilter<T>(IEnumerable<T> collection) where T : IPublishedElement
     {
         if (!Query.TryGetValue("filter", out var filter))
             return collection;
@@ -47,7 +47,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
         return collection;
     }
 
-    public virtual bool ApplyOperator(IPublishedContent content, string propertyAlias, string opr, string input)
+    public virtual bool ApplyOperator(IPublishedElement content, string propertyAlias, string opr, string input)
     {
         object propertyValue = GetPropertyValue(content, propertyAlias);
         return ApplyOperatorToValue(opr, input, propertyValue);
@@ -79,13 +79,13 @@ public class DefaultFilterInterpreter : IFilterInterpreter
         };
     }
 
-    public virtual object GetPropertyValue(IPublishedContent content, string propertyAlias)
+    public virtual object GetPropertyValue(IPublishedElement content, string propertyAlias)
     {
         var publishedProperty = content.GetProperty(propertyAlias);
         if (publishedProperty is not null)
             return publishedProperty.GetValue(Culture);
 
-        var classProperty = typeof(IPublishedContent).GetProperties()
+        var classProperty = content.GetType().GetProperties()
             .SingleOrDefault(x => x.Name.Equals(propertyAlias, StringComparison.InvariantCultureIgnoreCase));
         if (classProperty is not null)
             return classProperty.GetValue(content);

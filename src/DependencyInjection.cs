@@ -16,7 +16,6 @@ public static class IServiceCollectionExtensions
             services.Configure<ContentApiOptions>(configure);
 
         //Handlers
-        services.AddScoped<IExpander, DefaultExpander>();
         services.AddScoped<IFilterInterpreter, DefaultFilterInterpreter>();
         services.AddScoped<ILinkFormatter, DefaultLinkFormatter>();
         services.AddScoped<ILinkPopulator, DefaultLinkPopulator>();

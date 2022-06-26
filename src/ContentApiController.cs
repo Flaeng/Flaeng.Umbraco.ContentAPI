@@ -4,6 +4,7 @@ using System.Text.Json;
 using Flaeng.Umbraco.ContentAPI.Handlers;
 using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
+using Flaeng.Umbraco.Extensions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -55,26 +56,31 @@ public class ContentApiController : UmbracoApiController
     {
         try
         {
-            if (!options.EnableCaching)
-                return Ok(GetResult(path));
+            ILinksContainer result;
+            if (options.EnableCaching)
+            {
+                var cacheKey = $"{Culture}_{path}";
+                result = cache.RuntimeCache.Get<ILinksContainer>(
+                        key: cacheKey,
+                        factory: () => GetResult(path),
+                        timeout: options.CacheTimeout,
+                        isSliding: true);
+            }
+            else result = GetResult(path);
 
-            var cacheKey = $"{Culture}_{path}";
-            var result = cache.RuntimeCache.Get(
-                    key: cacheKey,
-                    factory: () => GetResult(path),
-                    timeout: options.CacheTimeout,
-                    isSliding: true);
-
+            if (result == null)
+                return NotFound();
+                
             return Ok(result);
         }
         catch (HalException e)
         {
-            logger.LogInformation(e, "ContentAPI request returned non-successfull response");
+            logger.LogInformation(e, "ContentAPI request returned non-successful response");
             return BadRequest(new BadRequestResponse(e.SystemMessage, e.Message));
         }
         catch (Exception e)
         {
-            logger.LogInformation(e, "ContentAPI request returned non-successfull response");
+            logger.LogInformation(e, "ContentAPI request returned non-successful response");
             return StatusCode(500);
         }
     }
@@ -86,13 +92,16 @@ public class ContentApiController : UmbracoApiController
         switch (result)
         {
             case RootInterpreterResult rir:
-                return responseBuilder.BuildRoot(rir);
+                return responseBuilder.Build(rir);
 
             case Handlers.ObjectInterpreterResult oir:
                 return oir.Value == null ? null : responseBuilder.Build(oir);
 
             case CollectionInterpreterResult cir:
                 return responseBuilder.Build(cir);
+
+            case null:
+                return null;
 
             default:
                 throw new Exception("Unknown interpretor result");

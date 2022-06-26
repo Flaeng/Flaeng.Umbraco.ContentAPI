@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Flaeng.Umbraco.ContentAPI.Models;
@@ -8,6 +9,7 @@ using Flaeng.Umbraco.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
+using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Cms.Core.Web;
@@ -16,9 +18,9 @@ namespace Flaeng.Umbraco.ContentAPI.Handlers;
 
 public interface ILinkPopulator
 {
-    void PopulateRoot(LinksObject item);
-    void Populate(ObjectResponse item);
-    void Populate(CollectionResponse coll);
+    void PopulateRoot(LinksContainer item);
+    void Populate(HalObject item);
+    void Populate(HalCollection coll);
 }
 public class DefaultLinkPopulator : ILinkPopulator
 {
@@ -43,57 +45,97 @@ public class DefaultLinkPopulator : ILinkPopulator
         this.linkFormatter = linkFormatter;
     }
 
-    public virtual void PopulateRoot(LinksObject item)
+    public virtual void PopulateRoot(LinksContainer item)
     {
         if (options.HideLinks)
             return;
 
         AddSelfLink(item);
+        AppendQueryStringToSelfLink(item);
 
         if (options.UmbracoOptions.ExposeMedia)
-            item.Links.Add("media", new HalObject { Name = "Media", Href = linkFormatter.FormatHref("media") });
+            item.Links.Add("media", new LinkObject { Name = "Media", Href = linkFormatter.FormatHref("media") });
 
         if (options.UmbracoOptions.ExposeMembers)
-            item.Links.Add("members", new HalObject { Name = "Members", Href = linkFormatter.FormatHref("members") });
+            item.Links.Add("members", new LinkObject { Name = "Members", Href = linkFormatter.FormatHref("members") });
 
         if (options.UmbracoOptions.ExposeMemberGroups)
-            item.Links.Add("memberGroups", new HalObject { Name = "Member Groups", Href = linkFormatter.FormatHref("memberGroups") });
+            item.Links.Add("memberGroups", new LinkObject { Name = "Member Groups", Href = linkFormatter.FormatHref("memberGroups") });
 
         if (options.UmbracoOptions.ExposeUsers)
-            item.Links.Add("users", new HalObject { Name = "Users", Href = linkFormatter.FormatHref("users") });
+            item.Links.Add("users", new LinkObject { Name = "Users", Href = linkFormatter.FormatHref("users") });
 
         if (options.UmbracoOptions.ExposeForms)
-            item.Links.Add("forms", new HalObject { Name = "Forms", Href = linkFormatter.FormatHref("forms") });
+            item.Links.Add("forms", new LinkObject { Name = "Forms", Href = linkFormatter.FormatHref("forms") });
 
         if (options.UmbracoOptions.ExposeTranslationDictionary)
-            item.Links.Add("dictionary", new HalObject { Name = "Dictionary", Href = linkFormatter.FormatHref("dictionary") });
+            item.Links.Add("dictionary", new LinkObject { Name = "Dictionary", Href = linkFormatter.FormatHref("dictionary") });
 
         foreach (var contentType in contentTypeService.GetAll())
-            item.Links.Add(contentType.Alias, new HalObject { Name = contentType.Name, Href = linkFormatter.FormatHref(contentType.Alias) });
+            item.Links.Add(contentType.Alias, new LinkObject { Name = contentType.Name, Href = linkFormatter.FormatHref(contentType.Alias) });
     }
 
     public virtual void AddSelfLink(ILinksContainer container)
     {
-        if (container is ObjectResponse or)
-            container.Links.Add("self", new HalObject { Href = linkFormatter.FormatHref($"{or.ContentType.Alias}/{or.Id}") });
-        else if (container is CollectionResponse cr)
-            container.Links.Add("self", new HalObject { Href = linkFormatter.FormatHref($"{cr.ItemContentType}") });
-        else
-            container.Links.Add("self", new HalObject { Href = linkFormatter.FormatHref(String.Empty) });
+        switch (container)
+        {
+            case HalObject or:
+                {
+                    string path = or.Id != null
+                        ? $"{or.ContentType.Alias}/{or.Id}"
+                        // : $"{or.Parent.ContentType.Alias}/{or.Parent.Id}/{or.ContentType.Alias}/{or.Key}";
+                        : $"{or.ContentType.Alias}/{or.Key}";
 
+                    var hal = new LinkObject
+                    {
+                        Href = linkFormatter.FormatHref(path)
+                    };
+                    container.Links.Add("self", hal);
+                }
+                break;
+
+            case HalCollection cr:
+                {
+                    var hal = new LinkObject
+                    {
+                        Href = linkFormatter.FormatHref($"{cr.ItemContentType}")
+                    };
+                    container.Links.Add("self", hal);
+                }
+                break;
+
+            default:
+                {
+                    var hal = new LinkObject
+                    {
+                        Href = linkFormatter.FormatHref(String.Empty)
+                    };
+                    container.Links.Add("self", hal);
+                }
+                break;
+        }
+    }
+
+    private void AppendQueryStringToSelfLink(ILinksContainer container)
+    {
         container.Links["self"].Href += httpContext.Request.QueryString;
     }
 
-    public virtual void Populate(ObjectResponse item)
+    public virtual void Populate(HalObject item)
+        => Populate(item, false);
+
+    public virtual void Populate(HalObject item, bool isInternalCall)
     {
         if (options.HideLinks)
             return;
 
         AddSelfLink(item);
+        if (isInternalCall == false)
+            AppendQueryStringToSelfLink(item);
 
         if (item.Parent != null)
         {
-            item.Links.Add("parent", new HalObject
+            item.Links.Add("parent", new LinkObject
             {
                 Name = item.Parent.Name,
                 Href = linkFormatter.FormatHref($"{item.Parent.ContentType.Alias}/{item.Parent.Id}")
@@ -104,19 +146,22 @@ public class DefaultLinkPopulator : ILinkPopulator
         foreach (var childContentType in childContentTypeList)
         {
             var alias = childContentType.Alias;
-            item.Links.Add(alias, new HalObject
+            item.Links.Add(alias, new LinkObject
             {
                 Name = childContentType.Name,
                 Href = linkFormatter.FormatHref($"{item.ContentType.Alias}/{item.Id}/{alias}")
             });
         }
 
-        foreach (var property in item.Properties.Where(x => x.HasValueOfIEnumerableOfIPublishedElement()))
+        foreach (var property in item.Properties)
         {
-            var alias = property.Alias;
-            item.Links.Add(alias, new HalObject
+            if (property.Value is not IEnumerable<HalObject>)
+                continue;
+
+            var alias = property.Key.Alias;
+            item.Links.Add(alias, new LinkObject
             {
-                Name = formatNameFromAlias(property.Alias),
+                Name = formatNameFromAlias(alias),
                 Href = linkFormatter.FormatHref($"{item.ContentType.Alias}/{item.Id}/{alias}")
             });
         }
@@ -124,9 +169,10 @@ public class DefaultLinkPopulator : ILinkPopulator
 
     public virtual string formatNameFromAlias(string alias) => Char.ToUpper(alias[0]) + alias.Substring(1);
 
-    public virtual void Populate(CollectionResponse coll)
+    public virtual void Populate(HalCollection coll)
     {
         AddSelfLink(coll);
+        AppendQueryStringToSelfLink(coll);
 
         var currentUrl = httpContext.Request.Path.ToString();
         var currentQuery = new MutableQueryCollection(httpContext.Request.Query);
@@ -135,12 +181,12 @@ public class DefaultLinkPopulator : ILinkPopulator
             {
                 var query = currentQuery.Copy();
                 query["pageNumber"] = "1";
-                coll.Links.Add("first", new HalObject { Href = $"{currentUrl}?{query}" });
+                coll.Links.Add("first", new LinkObject { Href = $"{currentUrl}?{query}" });
             }
             {
                 var query = currentQuery.Copy();
                 query["pageNumber"] = (coll.PageNumber - 1).ToString();
-                coll.Links.Add("prev", new HalObject { Href = $"{currentUrl}?{query}" });
+                coll.Links.Add("prev", new LinkObject { Href = $"{currentUrl}?{query}" });
             }
         }
         if (coll.PageNumber < coll.TotalPageCount)
@@ -148,21 +194,27 @@ public class DefaultLinkPopulator : ILinkPopulator
             {
                 var query = currentQuery.Copy();
                 query["pageNumber"] = (coll.PageNumber + 1).ToString();
-                coll.Links.Add("next", new HalObject { Href = $"{currentUrl}?{query}" });
+                coll.Links.Add("next", new LinkObject { Href = $"{currentUrl}?{query}" });
             }
             {
                 var query = currentQuery.Copy();
                 query["pageNumber"] = coll.TotalPageCount.ToString();
-                coll.Links.Add("last", new HalObject { Href = $"{currentUrl}?{query}" });
+                coll.Links.Add("last", new LinkObject { Href = $"{currentUrl}?{query}" });
             }
         }
 
         foreach (var item in coll.Items)
         {
-            Populate(item);
-            foreach (var property in item.PropertiesWithIPublishedContentValue.SelectMany(x => x))
+            Populate(item, true);
+
+            var childHalObjects = item.Properties
+                .Where(x => x.Value is IEnumerable<HalObject>)
+                .Select(x => x.Value)
+                .Cast<IEnumerable<HalObject>>()
+                .SelectMany(x => x);
+            foreach (var property in childHalObjects)
             {
-                Populate(property);
+                Populate(property, true);
             }
         }
     }

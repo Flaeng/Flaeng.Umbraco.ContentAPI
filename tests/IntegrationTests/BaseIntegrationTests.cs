@@ -128,11 +128,6 @@ public abstract class BaseIntegrationTests : BaseTests
 
         var filterInterpreter = new DefaultFilterInterpreter(httpContextAccessorMock.Object);
 
-        var expander = new DefaultExpander(
-            new Mock<ILogger<DefaultExpander>>().Object,
-            httpContextAccessorMock.Object
-        );
-
         var linkPopulator = new DefaultLinkPopulator(
             httpContextAccessorMock.Object,
             umbracoContextAccessorMock.Object,
@@ -143,8 +138,7 @@ public abstract class BaseIntegrationTests : BaseTests
         var responseBuilder = new DefaultResponseBuilder(
             umbracoContextAccessorMock.Object,
             httpContextAccessorMock.Object,
-            linkPopulator,
-            expander
+            linkPopulator
         );
 
         var requestInterpreter = new DefaultRequestInterpreter(
@@ -176,20 +170,20 @@ public abstract class BaseIntegrationTests : BaseTests
         HttpContextAccessor = httpContextAccessorMock.Object;
     }
 
-    protected static ObjectResponse AssertAndGetObjectResponse(ActionResult<object> result)
+    protected static HalObject AssertAndGetObjectResponse(ActionResult<object> result)
     {
         Assert.NotNull(result);
         Assert.NotNull(result.Value);
-        var response = result.Value as ObjectResponse;
+        var response = result.Value as HalObject;
         Assert.NotNull(response);
         return response!;
     }
 
-    protected static CollectionResponse AssertAndGetCollectionResponse(ActionResult<object> result)
+    protected static HalCollection AssertAndGetCollectionResponse(ActionResult<object> result)
     {
         Assert.NotNull(result);
         Assert.NotNull(result.Value);
-        var response = result.Value as CollectionResponse;
+        var response = result.Value as HalCollection;
         Assert.NotNull(response);
         Assert.NotNull(response!.Items);
         return response!;
