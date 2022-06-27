@@ -13,7 +13,7 @@ public class Initial_collection_response : BaseIntegrationTests
     {
         var result = Controller!.Get($"employee");
         var objResult = result.Result as OkObjectResult;
-        response = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));   
+        response = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
     }
 
     [Fact]

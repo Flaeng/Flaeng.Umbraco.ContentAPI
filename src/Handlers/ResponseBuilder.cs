@@ -32,7 +32,7 @@ public class DefaultResponseBuilder : IResponseBuilder
         IUmbracoContextAccessor umbracoContextAccessor,
         IHttpContextAccessor httpContextAccessor,
         ILinkPopulator linkPopulator,
-        IPublishedUrlProvider publishedUrlProvider 
+        IPublishedUrlProvider publishedUrlProvider
         )
     {
         this.umbracoContext = umbracoContextAccessor.GetUmbracoContextOrThrow();
