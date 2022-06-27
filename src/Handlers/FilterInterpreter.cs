@@ -24,7 +24,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
 
     public DefaultFilterInterpreter(
         IHttpContextAccessor httpContextAccessor,
-        IPublishedUrlProvider publishedUrlProvider 
+        IPublishedUrlProvider publishedUrlProvider
         )
     {
         this.httpContext = httpContextAccessor.HttpContext;
@@ -111,7 +111,7 @@ public class DefaultFilterInterpreter : IFilterInterpreter
             case "url":
                 if (element is IPublishedContent content)
                     return publishedUrlProvider.GetUrl(content, UrlMode.Relative, Culture);
-                    // return content.Url(publishedUrlProvider, Culture, UrlMode.Relative);
+                // return content.Url(publishedUrlProvider, Culture, UrlMode.Relative);
                 break;
         }
 
