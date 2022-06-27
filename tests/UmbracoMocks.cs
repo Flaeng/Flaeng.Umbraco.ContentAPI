@@ -1,5 +1,3 @@
-using System;
-
 using Moq;
 
 using Umbraco.Cms.Core;
@@ -23,6 +21,7 @@ public interface IUmbracoApp
     IUmbracoContext UmbracoContext { get; }
     AppCaches AppCaches { get; }
     IContentTypeService ContentTypeService { get; }
+    IMediaTypeService MediaTypeService { get; }
 }
 public interface IUmbracoBuilder
 {
@@ -104,6 +103,9 @@ public class UmbracoBuilder : IUmbracoApp, IUmbracoBuilder
 
     private readonly Mock<IContentTypeService> contentTypeServiceMock = new Mock<IContentTypeService>();
     public IContentTypeService ContentTypeService => contentTypeServiceMock.Object;
+
+    private readonly Mock<IMediaTypeService> mediaTypeServiceMock = new Mock<IMediaTypeService>();
+    public IMediaTypeService MediaTypeService => mediaTypeServiceMock.Object;
 
     private readonly Mock<IPublishedMediaCache> mediaCacheMock = new();
     public IPublishedMediaCache MediaCache => mediaCacheMock.Object;

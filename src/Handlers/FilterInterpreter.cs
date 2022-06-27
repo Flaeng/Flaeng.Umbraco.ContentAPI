@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Routing;
 using Umbraco.Extensions;
 
 namespace Flaeng.Umbraco.ContentAPI.Handlers;
@@ -19,12 +20,15 @@ public class DefaultFilterInterpreter : IFilterInterpreter
     protected HttpRequest HttpRequest => httpContext.Request;
     protected string Culture => HttpRequest.Headers.ContentLanguage;
     protected IQueryCollection Query => HttpRequest.Query;
+    protected readonly IPublishedUrlProvider publishedUrlProvider;
 
     public DefaultFilterInterpreter(
-        IHttpContextAccessor httpContextAccessor
+        IHttpContextAccessor httpContextAccessor,
+        IPublishedUrlProvider publishedUrlProvider 
         )
     {
         this.httpContext = httpContextAccessor.HttpContext;
+        this.publishedUrlProvider = publishedUrlProvider;
     }
 
     public virtual IEnumerable<T> ApplyFilter<T>(IEnumerable<T> collection) where T : IPublishedElement
@@ -106,7 +110,8 @@ public class DefaultFilterInterpreter : IFilterInterpreter
         {
             case "url":
                 if (element is IPublishedContent content)
-                    return content.Url();
+                    return publishedUrlProvider.GetUrl(content, UrlMode.Relative, Culture);
+                    // return content.Url(publishedUrlProvider, Culture, UrlMode.Relative);
                 break;
         }
 

@@ -1,7 +1,6 @@
 using Moq;
 
 using Umbraco.Cms.Core.Web;
-using Umbraco.Cms.Web.Common.UmbracoContext;
 
 namespace Flaeng.Umbraco.ContentAPI.Tests;
 

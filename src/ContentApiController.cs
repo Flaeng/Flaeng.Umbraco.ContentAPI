@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 
 using Flaeng.Umbraco.ContentAPI.Handlers;
 using Flaeng.Umbraco.ContentAPI.Models;
@@ -56,17 +55,13 @@ public class ContentApiController : UmbracoApiController
     {
         try
         {
-            ILinksContainer result;
-            if (options.EnableCaching)
-            {
-                var cacheKey = $"{Culture}_{path}";
-                result = cache.RuntimeCache.Get<ILinksContainer>(
-                        key: cacheKey,
+            ILinksContainer result = options.EnableCaching
+                ? cache.RuntimeCache.Get<ILinksContainer>(
+                        key: $"{Culture}_{path}",
                         factory: () => GetResult(path),
                         timeout: options.CacheTimeout,
-                        isSliding: true);
-            }
-            else result = GetResult(path);
+                        isSliding: options.SlidingCache)
+                : GetResult(path);
 
             if (result == null)
                 return NotFound();

@@ -10,7 +10,8 @@ public interface IFluentContentApiOptions
     // IContentApiOptions ExposeUsers();
     // IContentApiOptions ExposeForms();
     // IContentApiOptions ExposeTranslationDictionary();
-    IContentApiOptions UseCachingWithTimeout(TimeSpan timeout);
+    IContentApiOptions UseCachingWithTimeout(TimeSpan? timeout);
+    IContentApiOptions UseSlidingCachingWithTimeout(TimeSpan? timeout);
     IContentApiOptions UseAbsolutePathInLinks();
     IContentApiOptions IgnoreLinks();
     // IContentApiOptions UseJwtWithPrivateKey(string privateKey);
@@ -59,9 +60,17 @@ public partial class ContentApiOptions : IFluentContentApiOptions//, IAllowCrudO
     #endregion
 
     #region Caching
-    public IContentApiOptions UseCachingWithTimeout(TimeSpan timeout)
+    public IContentApiOptions UseCachingWithTimeout(TimeSpan? timeout)
     {
         EnableCaching = true;
+        SlidingCache = false;
+        CacheTimeout = timeout;
+        return this;
+    }
+    public IContentApiOptions UseSlidingCachingWithTimeout(TimeSpan? timeout)
+    {
+        EnableCaching = true;
+        SlidingCache = true;
         CacheTimeout = timeout;
         return this;
     }

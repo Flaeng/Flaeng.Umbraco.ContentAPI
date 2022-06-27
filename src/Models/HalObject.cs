@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using Flaeng.Umbraco.ContentAPI.JsonConverters;
 using Flaeng.Umbraco.Extensions;
 
-using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Models.PublishedContent;
 
 namespace Flaeng.Umbraco.ContentAPI.Models;

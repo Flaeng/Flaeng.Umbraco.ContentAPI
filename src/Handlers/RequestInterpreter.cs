@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
 using Flaeng.Umbraco.Extensions;
 
@@ -138,18 +137,23 @@ public class DefaultRequestInterpreter : IRequestInterpreter
 
     public virtual IPublishedContent GetContentById(string contentId, string contentTypeAlias)
     {
-        var content =
-            int.TryParse(contentId, out int contentIntId)
-            ? umbracoContext.Content.GetById(contentIntId)
+        var getById = (IPublishedCache cache) =>
+        {
+            var content =
+                int.TryParse(contentId, out int contentIntId)
+                ? cache.GetById(contentIntId)
 
-            : Guid.TryParse(contentId, out Guid contentGuidId)
-            ? umbracoContext.Content.GetById(contentGuidId)
+                : Guid.TryParse(contentId, out Guid contentGuidId)
+                ? cache.GetById(contentGuidId)
 
-            : umbracoContext.Content.GetById(Udi.Create(contentTypeAlias, contentId));
+                : cache.GetById(Udi.Create(contentTypeAlias, contentId));
 
-        return content == null || content.ContentType.Alias != contentTypeAlias
-            ? null
-            : content;
+            return content == null || content.ContentType.Alias != contentTypeAlias
+                ? null
+                : content;
+        };
+
+        return getById(umbracoContext.Content) ?? getById(umbracoContext.Media);
     }
 
     public virtual bool tryInterpreteUmbracoRequest(string[] request, out IInterpreterResult result)

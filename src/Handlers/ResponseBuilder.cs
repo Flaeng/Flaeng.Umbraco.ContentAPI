@@ -8,6 +8,7 @@ using Flaeng.Umbraco.Extensions;
 using Microsoft.AspNetCore.Http;
 
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
 using Umbraco.Extensions;
 
@@ -25,16 +26,19 @@ public class DefaultResponseBuilder : IResponseBuilder
     protected HttpRequest Request => httpContext.Request;
     protected string Culture => Request.Headers.ContentLanguage;
     protected readonly ILinkPopulator linkPopulator;
+    protected readonly IPublishedUrlProvider publishedUrlProvider;
 
     public DefaultResponseBuilder(
         IUmbracoContextAccessor umbracoContextAccessor,
         IHttpContextAccessor httpContextAccessor,
-        ILinkPopulator linkPopulator
+        ILinkPopulator linkPopulator,
+        IPublishedUrlProvider publishedUrlProvider 
         )
     {
         this.umbracoContext = umbracoContextAccessor.GetUmbracoContextOrThrow();
         this.httpContext = httpContextAccessor.HttpContext;
         this.linkPopulator = linkPopulator;
+        this.publishedUrlProvider = publishedUrlProvider;
     }
 
     public virtual LinksContainer Build(RootInterpreterResult request)
@@ -89,9 +93,16 @@ public class DefaultResponseBuilder : IResponseBuilder
             result.SetProperty("parentId", content.Parent?.Id ?? -1);
             result.SetProperty("path", content.Path);
             result.SetProperty("sortOrder", content.SortOrder);
-            result.SetProperty("url", content.Url());
+            result.SetProperty("url", publishedUrlProvider.GetUrl(content, UrlMode.Relative, Culture));
         }
 
+        Expand(element, expandPath, result);
+        linkPopulator.Populate(result, expandPath, element);
+        return result;
+    }
+
+    private void Expand(IPublishedElement element, string[] expandPath, HalObject result)
+    {
         var propertiesToExpand = expandPath.Where(x => !x.Contains(".")).ToList();
         foreach (var property in element.Properties)
         {
@@ -116,9 +127,6 @@ public class DefaultResponseBuilder : IResponseBuilder
         }
         if (propertiesToExpand.Any())
             throw new ExpansionException(propertiesToExpand.First());
-
-        linkPopulator.Populate(result, expandPath);
-        return result;
     }
 
     private HalObject handleElementPropertyValue(IPublishedProperty property, string[] expandPath)

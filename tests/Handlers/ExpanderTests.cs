@@ -1,11 +1,10 @@
 using Flaeng.Umbraco.ContentAPI.Handlers;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 using Moq;
 
-using Umbraco.Cms.Core.Web;
+using Umbraco.Cms.Core.Routing;
 
 namespace Flaeng.Umbraco.ContentAPI.Tests.Handlers;
 
@@ -19,7 +18,8 @@ public class Expander
             var expander = new DefaultResponseBuilder(
                 GetDummyUmbracoContextAccessor(),
                 new Mock<IHttpContextAccessor>().Object,
-                new Mock<ILinkPopulator>().Object);
+                new Mock<ILinkPopulator>().Object,
+                new Mock<IPublishedUrlProvider>().Object);
 
             var arr = expander.ConvertExpandStringToArray("");
 
@@ -31,7 +31,8 @@ public class Expander
             var expander = new DefaultResponseBuilder(
                 GetDummyUmbracoContextAccessor(),
                 new Mock<IHttpContextAccessor>().Object,
-                new Mock<ILinkPopulator>().Object);
+                new Mock<ILinkPopulator>().Object,
+                new Mock<IPublishedUrlProvider>().Object);
 
             var arr = expander.ConvertExpandStringToArray("friends");
 
@@ -43,7 +44,8 @@ public class Expander
             var expander = new DefaultResponseBuilder(
                 GetDummyUmbracoContextAccessor(),
                 new Mock<IHttpContextAccessor>().Object,
-                new Mock<ILinkPopulator>().Object);
+                new Mock<ILinkPopulator>().Object,
+                new Mock<IPublishedUrlProvider>().Object);
 
             var arr = expander.ConvertExpandStringToArray("friends,photos");
 
@@ -55,7 +57,8 @@ public class Expander
             var expander = new DefaultResponseBuilder(
                 GetDummyUmbracoContextAccessor(),
                 new Mock<IHttpContextAccessor>().Object,
-                new Mock<ILinkPopulator>().Object);
+                new Mock<ILinkPopulator>().Object,
+                new Mock<IPublishedUrlProvider>().Object);
 
             var arr = expander.ConvertExpandStringToArray("friends.photos");
 
@@ -67,7 +70,8 @@ public class Expander
             var expander = new DefaultResponseBuilder(
                 GetDummyUmbracoContextAccessor(),
                 new Mock<IHttpContextAccessor>().Object,
-                new Mock<ILinkPopulator>().Object);
+                new Mock<ILinkPopulator>().Object,
+                new Mock<IPublishedUrlProvider>().Object);
 
             var arr = expander.ConvertExpandStringToArray("friends.photos,photos");
 

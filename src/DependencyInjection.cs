@@ -4,7 +4,6 @@ using Flaeng.Umbraco.ContentAPI.Handlers;
 using Flaeng.Umbraco.ContentAPI.Options;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 public static class IServiceCollectionExtensions

@@ -4,7 +4,6 @@ using Flaeng.Umbraco.ContentAPI.Handlers;
 using Flaeng.Umbraco.ContentAPI.Models;
 using Flaeng.Umbraco.ContentAPI.Options;
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -14,20 +13,15 @@ using Microsoft.Extensions.Primitives;
 
 using Moq;
 
-using Newtonsoft.Json.Linq;
-
 using Umbraco.Cms.Core.Models.PublishedContent;
+using Umbraco.Cms.Core.Routing;
 using Umbraco.Cms.Core.Web;
+using Umbraco.Extensions;
 
 namespace Flaeng.Umbraco.ContentAPI.Tests.IntegrationTests;
 
 public abstract class BaseIntegrationTests : BaseTests
 {
-    protected JToken rootRequestResponse;
-    protected JToken objectResponse;
-    protected JToken initialCollectionResponse;
-    protected JToken subsequentCollectionResponse;
-
     public BaseIntegrationTests()
     {
         var builder = UmbracoBuilder.Create();
@@ -57,24 +51,6 @@ public abstract class BaseIntegrationTests : BaseTests
             builder.AddContent("employee", $"Employee #{i}", deltaId);
 
         Initialize(builder.Build());
-
-        var result = Controller!.Get(String.Empty);
-        var objResult = result.Result as OkObjectResult;
-        rootRequestResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
-
-        result = Controller!.Get($"employee");
-        objResult = result.Result as OkObjectResult;
-        initialCollectionResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
-
-        QueryString = "?pageNumber=2";
-        result = Controller!.Get($"employee");
-        objResult = result.Result as OkObjectResult;
-        subsequentCollectionResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
-
-        QueryString = String.Empty;
-        result = Controller!.Get($"scrumteam/8");
-        objResult = result.Result as OkObjectResult;
-        objectResponse = JToken.Parse(JsonSerializer.Serialize(objResult?.Value, SerializerOptions));
     }
 
     protected ContentApiController? Controller { get; private set; }
@@ -84,8 +60,7 @@ public abstract class BaseIntegrationTests : BaseTests
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-        // Converters = { new ObjectResponseConverter(), new CollectionResponseConverter() }
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
     };
 
     private QueryCollection Query = new();
@@ -126,19 +101,28 @@ public abstract class BaseIntegrationTests : BaseTests
             optionsMock.Object,
             httpContextAccessorMock.Object);
 
-        var filterInterpreter = new DefaultFilterInterpreter(httpContextAccessorMock.Object);
+        var publishedUrlProviderMock = new Mock<IPublishedUrlProvider>();
+        publishedUrlProviderMock.Setup(x => x.GetUrl(It.IsAny<Guid>(), It.IsAny<UrlMode>(), It.IsAny<string>(), It.IsAny<Uri>())).Returns("");
+        publishedUrlProviderMock.Setup(x => x.GetUrl(It.IsAny<int>(), It.IsAny<UrlMode>(), It.IsAny<string>(), It.IsAny<Uri>())).Returns("");
+        publishedUrlProviderMock.Setup(x => x.GetUrl(It.IsAny<IPublishedContent>(), It.IsAny<UrlMode>(), It.IsAny<string>(), It.IsAny<Uri>())).Returns("");
+
+        var filterInterpreter = new DefaultFilterInterpreter(
+            httpContextAccessorMock.Object,
+            publishedUrlProviderMock.Object);
 
         var linkPopulator = new DefaultLinkPopulator(
             httpContextAccessorMock.Object,
             umbracoContextAccessorMock.Object,
             app.ContentTypeService,
+            app.MediaTypeService,
             optionsMock.Object,
             linkFormatter);
 
         var responseBuilder = new DefaultResponseBuilder(
             umbracoContextAccessorMock.Object,
             httpContextAccessorMock.Object,
-            linkPopulator
+            linkPopulator,
+            publishedUrlProviderMock.Object
         );
 
         var requestInterpreter = new DefaultRequestInterpreter(

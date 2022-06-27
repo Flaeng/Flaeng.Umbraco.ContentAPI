@@ -7,6 +7,7 @@ public interface IContentApiOptions : IFluentContentApiOptions
     static string ConfigurationName = "ContentApiOptions";
     bool EnableCaching { get; set; }
     TimeSpan? CacheTimeout { get; set; }
+    bool SlidingCache { get; set; }
     bool HideLinks { get; set; }
     bool PrependAbsolutePathToLinks { get; set; }
     // string JwtPrivateKey { get; set; }
@@ -19,6 +20,7 @@ public partial class ContentApiOptions : IContentApiOptions
 {
     public bool EnableCaching { get; set; }
     public TimeSpan? CacheTimeout { get; set; }
+    public bool SlidingCache { get; set; }
 
     public bool HideLinks { get; set; }
     public bool PrependAbsolutePathToLinks { get; set; }

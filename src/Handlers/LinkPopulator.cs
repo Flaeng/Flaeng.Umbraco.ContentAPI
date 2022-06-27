@@ -20,7 +20,7 @@ namespace Flaeng.Umbraco.ContentAPI.Handlers;
 public interface ILinkPopulator
 {
     void PopulateRoot(LinksContainer item);
-    void Populate(HalObject item, string[] expand);
+    void Populate(HalObject item, string[] expand, IPublishedElement element);
     void Populate(HalCollection coll, string[] expand);
 }
 public class DefaultLinkPopulator : ILinkPopulator
@@ -28,6 +28,7 @@ public class DefaultLinkPopulator : ILinkPopulator
     protected readonly HttpContext httpContext;
     protected readonly IUmbracoContext umbracoContext;
     protected readonly IContentTypeService contentTypeService;
+    protected readonly IMediaTypeService mediaTypeService;
     protected readonly IContentApiOptions options;
     protected readonly ILinkFormatter linkFormatter;
 
@@ -35,6 +36,7 @@ public class DefaultLinkPopulator : ILinkPopulator
         IHttpContextAccessor httpContextAccessor,
         IUmbracoContextAccessor umbracoContextAccessor,
         IContentTypeService contentTypeService,
+        IMediaTypeService mediaTypeService,
         IOptions<ContentApiOptions> options,
         ILinkFormatter linkFormatter
     )
@@ -42,6 +44,7 @@ public class DefaultLinkPopulator : ILinkPopulator
         this.httpContext = httpContextAccessor.HttpContext;
         this.umbracoContext = umbracoContextAccessor.GetUmbracoContextOrThrow();
         this.contentTypeService = contentTypeService;
+        this.mediaTypeService = mediaTypeService;
         this.options = options.Value;
         this.linkFormatter = linkFormatter;
     }
@@ -84,7 +87,6 @@ public class DefaultLinkPopulator : ILinkPopulator
                 {
                     string path = or.Id != null
                         ? $"{or.ContentType.Alias}/{or.Id}"
-                        // : $"{or.Parent.ContentType.Alias}/{or.Parent.Id}/{or.ContentType.Alias}/{or.Key}";
                         : $"{or.ContentType.Alias}/{or.Key}";
 
                     var hal = new LinkObject
@@ -133,29 +135,71 @@ public class DefaultLinkPopulator : ILinkPopulator
         container.Links["self"].Href += httpContext.Request.QueryString;
     }
 
-    public virtual void Populate(HalObject item, string[] expand)
-    //     => Populate(item, expand, false);
-
-    // public virtual void Populate(HalObject item, string[] expand, bool isInternalCall)
+    public virtual void Populate(HalObject item, string[] expand, IPublishedElement element)
     {
         if (options.HideLinks)
             return;
 
         AddSelfLink(item, expand);
-        // if (isInternalCall == false)
-        //     AppendQueryStringToSelfLink(item);
+        TryAddLinkToParent(item);
+        AddLinksToChildNodeTypes(item);
+        TryAddLinksToPropertiesOfPublishedElement(item, element);
+    }
 
-        if (item.Parent != null)
+    private bool TryAddLinkToParent(HalObject item)
+    {
+        if (item.Parent == null)
+            return false;
+
+        item.Links.Add("parent", new LinkObject
         {
-            item.Links.Add("parent", new LinkObject
+            Name = item.Parent.Name,
+            Href = linkFormatter.FormatHref($"{item.Parent.ContentType.Alias}/{item.Parent.Id}")
+        });
+        return true;
+    }
+
+    protected virtual bool TryAddLinksToPropertiesOfPublishedElement(HalObject item, IPublishedElement element)
+    {
+        if (element is not IPublishedContent content)
+            return false;
+
+        foreach (var property in content.Properties)
+        {
+            if (!property.HasValueOfIEnumerableOfIPublishedElement())
+                continue;
+
+            var alias = property.Alias;
+            item.Links.Add(alias, new LinkObject
             {
-                Name = item.Parent.Name,
-                Href = linkFormatter.FormatHref($"{item.Parent.ContentType.Alias}/{item.Parent.Id}")
+                Name = formatNameFromAlias(alias),
+                Href = linkFormatter.FormatHref($"{content.ContentType.Alias}/{content.Id}/{alias}")
             });
         }
+        return true;
+    }
 
-        var childContentTypeList = contentTypeService.GetChildren(item.ContentType.Id);
-        foreach (var childContentType in childContentTypeList)
+    protected virtual void AddLinksToChildNodeTypes(HalObject item)
+    {
+        IEnumerable<IContentTypeComposition> children;
+        var contentType = contentTypeService.Get(item.ContentType.Id);
+        if (contentType is not null)
+        {
+            var ids = contentType.AllowedContentTypes.Select(x => x.Id.Value).ToArray();
+            children = contentTypeService.GetAll(ids);
+        }
+        else
+        {
+            var mediaType = mediaTypeService.Get(item.ContentType.Id);
+            if (mediaType != null)
+            {
+                var ids = mediaType.AllowedContentTypes.Select(x => x.Id.Value).ToArray();
+                children = mediaTypeService.GetAll(ids);
+            }
+            else children = new IContentTypeComposition[0];
+        }
+
+        foreach (var childContentType in children)
         {
             var alias = childContentType.Alias;
             item.Links.Add(alias, new LinkObject
@@ -164,27 +208,14 @@ public class DefaultLinkPopulator : ILinkPopulator
                 Href = linkFormatter.FormatHref($"{item.ContentType.Alias}/{item.Id}/{alias}")
             });
         }
-
-        foreach (var property in item.Properties)
-        {
-            if (property.Value is not IEnumerable<HalObject>)
-                continue;
-
-            var alias = property.Key.Alias;
-            item.Links.Add(alias, new LinkObject
-            {
-                Name = formatNameFromAlias(alias),
-                Href = linkFormatter.FormatHref($"{item.ContentType.Alias}/{item.Id}/{alias}")
-            });
-        }
     }
 
-    public virtual string formatNameFromAlias(string alias) => Char.ToUpper(alias[0]) + alias.Substring(1);
+    public virtual string formatNameFromAlias(string alias)
+        => Char.ToUpper(alias[0]) + alias.Substring(1);
 
     public virtual void Populate(HalCollection coll, string[] expand)
     {
         AddSelfLink(coll, expand);
-        // AppendQueryStringToSelfLink(coll);
 
         var currentUrl = httpContext.Request.Path.ToString();
         var currentQuery = new MutableQueryCollection(httpContext.Request.Query);
@@ -214,22 +245,5 @@ public class DefaultLinkPopulator : ILinkPopulator
                 coll.Links.Add("last", new LinkObject { Href = $"{currentUrl}?{query}" });
             }
         }
-
-        // foreach (var item in coll.Items)
-        // {
-        //     // Populate(item, expand);
-        //     // Populate(item, expand, true);
-
-        //     var childHalObjects = item.Properties
-        //         .Where(x => x.Value is IEnumerable<HalObject>)
-        //         .Select(x => x.Value)
-        //         .Cast<IEnumerable<HalObject>>()
-        //         .SelectMany(x => x);
-        //     foreach (var property in childHalObjects)
-        //     {
-        //         Populate(property, expand);
-        //         // Populate(property, expand, true);
-        //     }
-        // }
     }
 }
