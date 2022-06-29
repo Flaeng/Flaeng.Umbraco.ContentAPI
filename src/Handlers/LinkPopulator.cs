@@ -186,8 +186,8 @@ public class DefaultLinkPopulator : ILinkPopulator
         if (contentType is not null)
         {
             var ids = contentType.AllowedContentTypes.Select(x => x.Id.Value).ToArray();
-            children = ids.Length != 0 
-                ? contentTypeService.GetAll(ids) 
+            children = ids.Length != 0
+                ? contentTypeService.GetAll(ids)
                 : new IContentTypeComposition[0];
         }
         else
