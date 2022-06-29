@@ -3,14 +3,20 @@
     <TargetFramework>net6.0</TargetFramework>
     <ContentTargetFolders>.</ContentTargetFolders>
     <Product>Flaeng.Umbraco.ContentAPI</Product>
+    <Title>Flaeng Umbraco ContentAPI</Title>
     <PackageId>Flaeng.Umbraco.ContentAPI</PackageId>
-    <Title>Flaeng.Umbraco.ContentAPI</Title>
     <Description>HAL+JSON API endpoints for all your content</Description>
     <PackageTags>umbraco plugin package</PackageTags>
+    <Authors>Flaeng</Authors>
+    <PackageProjectUrl>https://github.com/Flaeng/Umbraco.ContentAPI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Flaeng/Umbraco.ContentAPI</RepositoryUrl>
+    <PackageTags>Umbraco Content API</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.0.0" />
+    <!-- <PackageReference Include="Umbraco.Cms.Web.Website" Version="10.0.0" /> -->
     <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="10.0.0" />
   </ItemGroup>
 
