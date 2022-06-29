@@ -186,7 +186,9 @@ public class DefaultLinkPopulator : ILinkPopulator
         if (contentType is not null)
         {
             var ids = contentType.AllowedContentTypes.Select(x => x.Id.Value).ToArray();
-            children = contentTypeService.GetAll(ids);
+            children = ids.Length != 0 
+                ? contentTypeService.GetAll(ids) 
+                : new IContentTypeComposition[0];
         }
         else
         {
@@ -194,7 +196,9 @@ public class DefaultLinkPopulator : ILinkPopulator
             if (mediaType != null)
             {
                 var ids = mediaType.AllowedContentTypes.Select(x => x.Id.Value).ToArray();
-                children = mediaTypeService.GetAll(ids);
+                children = ids.Length != 0
+                    ? mediaTypeService.GetAll(ids)
+                    : new IContentTypeComposition[0];
             }
             else children = new IContentTypeComposition[0];
         }
